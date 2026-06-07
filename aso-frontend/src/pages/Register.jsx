@@ -1,34 +1,80 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
+import { saveSession } from "../services/auth";
+import "../components/DashboardLayout.css";
 
+// Client self-registration; no VIN required — vehicles are added separately.
 export default function Register() {
-    const [vin, setVin] = useState("");
-    const [code, setCode] = useState("");
+    const navigate = useNavigate();
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const register = async () => {
-        await api.post("/auth/register", {
-            vin,
-            securityCode: code,
-            email,
-            password,
-        });
+    const register = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
 
-        alert("Zarejestrowano!");
-        window.location.href = "/";
+        try {
+            const res = await api.post("/auth/register", {
+                firstName,
+                lastName,
+                email,
+                password,
+            });
+            saveSession(res.data);
+            navigate("/client");
+        } catch (err) {
+            setError(err.response?.data?.message ?? "Registration failed.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div>
-            <h1>Rejestracja klienta</h1>
+        <div className="dashboard">
+            <h1>Create account</h1>
 
-            <input placeholder="VIN" onChange={(e) => setVin(e.target.value)} />
-            <input placeholder="Kod bezpieczeństwa" onChange={(e) => setCode(e.target.value)} />
-            <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-            <input type="password" placeholder="Hasło" onChange={(e) => setPassword(e.target.value)} />
+            <form className="auth-form" onSubmit={register}>
+                <input
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                />
+                <input
+                    placeholder="Last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                />
+                <input
+                    placeholder="Email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+                <button type="submit" disabled={loading}>
+                    {loading ? "Creating account…" : "Register"}
+                </button>
+                {error && <p className="form-error">{error}</p>}
+            </form>
 
-            <button onClick={register}>Zarejestruj</button>
+            <div className="auth-links">
+                <Link to="/">Already have an account? Sign in</Link>
+            </div>
         </div>
     );
 }

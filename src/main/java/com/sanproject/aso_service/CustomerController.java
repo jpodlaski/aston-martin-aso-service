@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// Customer listing and creation (admin/API use; clients register via /auth/register).
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {

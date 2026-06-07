@@ -3,13 +3,20 @@ package com.sanproject.aso_service;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
+// At least one of estimatedDropOffTime or availabilityNotes is required (enforced in BookingService).
 public class CreateBookingRequest {
 
     @NotNull(message = "Vehicle ID is required")
     private Long vehicleId;
 
-    @NotBlank(message = "Service type is required")
-    private String serviceType;
+    @NotBlank(message = "Customer description is required")
+    private String customerDescription;
+
+    private LocalDateTime estimatedDropOffTime;
+
+    private String availabilityNotes;
 
     public Long getVehicleId() {
         return vehicleId;
@@ -19,11 +26,27 @@ public class CreateBookingRequest {
         this.vehicleId = vehicleId;
     }
 
-    public String getServiceType() {
-        return serviceType;
+    public String getCustomerDescription() {
+        return customerDescription;
     }
 
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
+    public void setCustomerDescription(String customerDescription) {
+        this.customerDescription = customerDescription;
+    }
+
+    public LocalDateTime getEstimatedDropOffTime() {
+        return estimatedDropOffTime;
+    }
+
+    public void setEstimatedDropOffTime(LocalDateTime estimatedDropOffTime) {
+        this.estimatedDropOffTime = estimatedDropOffTime;
+    }
+
+    public String getAvailabilityNotes() {
+        return availabilityNotes;
+    }
+
+    public void setAvailabilityNotes(String availabilityNotes) {
+        this.availabilityNotes = availabilityNotes;
     }
 }

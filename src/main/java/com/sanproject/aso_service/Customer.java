@@ -1,5 +1,6 @@
 package com.sanproject.aso_service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+// Client account; password hash is never exposed in JSON responses.
 @Entity
 public class Customer {
 
@@ -23,6 +25,8 @@ public class Customer {
     @Email(message = "Email must be valid")
     @NotBlank(message = "Email is required")
     private String email;
+
+    private String passwordHash;
 
     public Customer() {
     }
@@ -64,5 +68,14 @@ public class Customer {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @JsonIgnore // never expose password hashes in API responses
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }

@@ -10,12 +10,17 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
+// Generates a simple PDF invoice attached to the booking_completed email.
 @Service
 public class InvoicePdfService {
 
     public byte[] createInvoicePdf(ServiceBooking booking, Customer customer) {
-        BigDecimal cost = booking.getEstimatedCost();
+        // Prefer final cost; fall back to estimate when final is missing.
+        BigDecimal cost = booking.getFinalCost() != null
+                ? booking.getFinalCost()
+                : booking.getEstimatedCost();
         String costText = cost != null ? cost.toPlainString() : "N/A";
         String currency = "EUR";
 
@@ -35,17 +40,33 @@ public class InvoicePdfService {
                 content.showText("Aston Martin ASO Service Invoice");
                 content.endText();
 
-                writeLine(doc, content, font, 12, 720, "Booking ID: " + booking.getId());
-                writeLine(doc, content, font, 12, 700, "Customer: " + booking.getCustomerName());
-                writeLine(doc, content, font, 12, 680, "Customer Email: " + safe(customer.getEmail()));
+                float y = 720;
+                y = writeLine(doc, content, font, 12, y, "Booking ID: " + booking.getId());
+                y = writeLine(doc, content, font, 12, y, "Customer: " + booking.getCustomerName());
+                y = writeLine(doc, content, font, 12, y, "Customer Email: " + safe(customer.getEmail()));
 
                 Vehicle v = booking.getVehicle();
-                writeLine(doc, content, font, 12, 660, "Vehicle: " + safe(booking.getCarModel())
+                y = writeLine(doc, content, font, 12, y, "Vehicle: " + safe(booking.getCarModel())
                         + (v != null && v.getVin() != null ? " (VIN: " + v.getVin() + ")" : ""));
 
-                writeLine(doc, content, font, 12, 640, "Service: " + safe(booking.getServiceType()));
-                writeLine(doc, content, font, 12, 620, "Status: " + booking.getStatus());
-                writeLine(doc, content, font, 12, 600, "Estimated Cost: " + costText + " " + currency);
+                y = writeLine(doc, content, font, 12, y, "Customer report: " + safe(booking.getCustomerDescription()));
+                y = writeLine(doc, content, font, 12, y, "Services: " + formatServiceTypes(booking.getServiceTypes()));
+
+                if (booking.getEstimatedDropOffTime() != null) {
+                    y = writeLine(doc, content, font, 12, y,
+                            "Estimated drop-off: " + formatDateTime(booking.getEstimatedDropOffTime()));
+                }
+                if (booking.getAvailabilityNotes() != null && !booking.getAvailabilityNotes().isBlank()) {
+                    y = writeLine(doc, content, font, 12, y,
+                            "Availability: " + booking.getAvailabilityNotes());
+                }
+                if (booking.getScheduledDateTime() != null) {
+                    y = writeLine(doc, content, font, 12, y,
+                            "Appointment: " + formatDateTime(booking.getScheduledDateTime()));
+                }
+
+                y = writeLine(doc, content, font, 12, y, "Status: " + booking.getStatus());
+                writeLine(doc, content, font, 12, y, "Final cost: " + costText + " " + currency);
             }
 
             doc.save(out);
@@ -55,7 +76,7 @@ public class InvoicePdfService {
         }
     }
 
-    private void writeLine(PDDocument doc,
+    private float writeLine(PDDocument doc,
                             PDPageContentStream content,
                             PDType1Font font,
                             int fontSize,
@@ -64,12 +85,34 @@ public class InvoicePdfService {
         content.beginText();
         content.setFont(font, fontSize);
         content.newLineAtOffset(50, y);
-        content.showText(text != null ? text : "");
+        content.showText(pdfSafe(text));
         content.endText();
+        return y - 20;
+    }
+
+    private String formatDateTime(LocalDateTime dateTime) {
+        return CustomerDateTimeFormatter.format(dateTime);
     }
 
     private String safe(String s) {
-        return s == null ? "" : s;
+        return pdfSafe(s);
+    }
+
+    private String pdfSafe(String text) {
+        if (text == null) {
+            return "";
+        }
+        StringBuilder sanitized = new StringBuilder(text.length());
+        for (char ch : text.toCharArray()) {
+            sanitized.append(ch <= 255 ? ch : '?');
+        }
+        return sanitized.toString();
+    }
+
+    private String formatServiceTypes(java.util.List<String> serviceTypes) {
+        if (serviceTypes == null || serviceTypes.isEmpty()) {
+            return "";
+        }
+        return String.join(", ", serviceTypes);
     }
 }
-

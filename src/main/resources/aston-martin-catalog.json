@@ -1,0 +1,1308 @@
+{
+  "modelLines": [
+    {
+      "id": "db1",
+      "name": "DB1",
+      "era": "1948–1950",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db1-coupe-2.0-i4-4m",
+              "displayName": "DB1 Coupe",
+              "engine": "2.0L Lagonda Inline-4",
+              "power": "90 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db2",
+      "name": "DB2",
+      "era": "1950–1953",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db2-coupe-2.6-i6-4m",
+              "displayName": "DB2 Coupe",
+              "engine": "2.6L Lagonda Straight-Six",
+              "power": "105 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db2-4",
+      "name": "DB2/4",
+      "era": "1953–1957",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db2-4-coupe-2.6-i6-4m",
+              "displayName": "DB2/4 Coupe",
+              "engine": "2.6L Lagonda Straight-Six",
+              "power": "125 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "db2-4-coupe-2.9-i6-4m",
+              "displayName": "DB2/4 Mk II Coupe",
+              "engine": "2.9L Lagonda Straight-Six",
+              "power": "140 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "saloon",
+          "name": "Saloon",
+          "configurations": [
+            {
+              "id": "db2-4-saloon-2.6-i6-4m",
+              "displayName": "DB2/4 Saloon",
+              "engine": "2.6L Lagonda Straight-Six",
+              "power": "125 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db-mark-iii",
+      "name": "DB Mark III",
+      "era": "1957–1959",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db3-coupe-2.9-i6-4m",
+              "displayName": "DB Mark III Coupe",
+              "engine": "2.9L Straight-Six",
+              "power": "162 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "saloon",
+          "name": "Saloon",
+          "configurations": [
+            {
+              "id": "db3-saloon-2.9-i6-4m",
+              "displayName": "DB Mark III Saloon",
+              "engine": "2.9L Straight-Six",
+              "power": "162 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db4",
+      "name": "DB4",
+      "era": "1958–1963",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db4-coupe-3.7-i6-4m",
+              "displayName": "DB4 Coupe",
+              "engine": "3.7L Straight-Six",
+              "power": "240 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "db4-coupe-3.7-i6-od",
+              "displayName": "DB4 Coupe",
+              "engine": "3.7L Straight-Six",
+              "power": "240 bhp",
+              "transmission": "4-speed Manual with Overdrive",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db4-gt",
+      "name": "DB4 GT",
+      "era": "1959–1963",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db4-gt-coupe-3.7-i6-4m",
+              "displayName": "DB4 GT Coupe",
+              "engine": "3.7L Straight-Six",
+              "power": "302 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db5",
+      "name": "DB5",
+      "era": "1963–1965",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db5-coupe-4.0-i6-4m",
+              "displayName": "DB5 Coupe",
+              "engine": "4.0L Straight-Six",
+              "power": "282 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "db5-coupe-4.0-i6-5m",
+              "displayName": "DB5 Coupe",
+              "engine": "4.0L Straight-Six",
+              "power": "282 bhp",
+              "transmission": "ZF 5-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "convertible",
+          "name": "Convertible",
+          "configurations": [
+            {
+              "id": "db5-conv-4.0-i6-4m",
+              "displayName": "DB5 Convertible",
+              "engine": "4.0L Straight-Six",
+              "power": "282 bhp",
+              "transmission": "4-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db6",
+      "name": "DB6",
+      "era": "1965–1970",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db6-coupe-4.0-i6-5m",
+              "displayName": "DB6 Coupe",
+              "engine": "4.0L Straight-Six",
+              "power": "282 bhp",
+              "transmission": "5-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "db6-coupe-4.0-i6-3a",
+              "displayName": "DB6 Coupe",
+              "engine": "4.0L Straight-Six",
+              "power": "282 bhp",
+              "transmission": "3-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "db6-volante-4.0-i6-5m",
+              "displayName": "DB6 Volante",
+              "engine": "4.0L Straight-Six",
+              "power": "282 bhp",
+              "transmission": "5-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dbs-classic",
+      "name": "DBS",
+      "era": "1967–1972",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "dbs-coupe-4.0-i6-5m",
+              "displayName": "DBS Coupe",
+              "engine": "4.0L Straight-Six",
+              "power": "282 bhp",
+              "transmission": "5-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "dbs-coupe-5.3-v8-5m",
+              "displayName": "DBS V8 Coupe",
+              "engine": "5.3L V8",
+              "power": "320 bhp",
+              "transmission": "5-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "dbs-coupe-5.3-v8-3a",
+              "displayName": "DBS V8 Coupe",
+              "engine": "5.3L V8",
+              "power": "320 bhp",
+              "transmission": "3-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v8-series",
+      "name": "V8",
+      "era": "1972–1989",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "v8-coupe-5.3-v8-5m",
+              "displayName": "V8 Coupe",
+              "engine": "5.3L V8",
+              "power": "310 bhp",
+              "transmission": "5-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "v8-coupe-5.3-v8-3a",
+              "displayName": "V8 Coupe",
+              "engine": "5.3L V8",
+              "power": "310 bhp",
+              "transmission": "3-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "v8-volante-5.3-v8-3a",
+              "displayName": "V8 Volante",
+              "engine": "5.3L V8",
+              "power": "310 bhp",
+              "transmission": "3-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v8-vantage-classic",
+      "name": "V8 Vantage",
+      "era": "1977–1989",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "v8v-coupe-5.3-v8-5m",
+              "displayName": "V8 Vantage Coupe",
+              "engine": "5.3L V8",
+              "power": "390 bhp",
+              "transmission": "5-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lagonda",
+      "name": "Lagonda",
+      "era": "1974–1990",
+      "bodyStyles": [
+        {
+          "id": "saloon",
+          "name": "Saloon",
+          "configurations": [
+            {
+              "id": "lagonda-saloon-5.3-v8-3a",
+              "displayName": "Lagonda Saloon",
+              "engine": "5.3L V8",
+              "power": "280 bhp",
+              "transmission": "3-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "virage",
+      "name": "Virage",
+      "era": "1989–2000",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "virage-coupe-5.3-v8-5m",
+              "displayName": "Virage Coupe",
+              "engine": "5.3L V8",
+              "power": "330 bhp",
+              "transmission": "5-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "virage-coupe-6.0-v8-5m",
+              "displayName": "Virage Coupe",
+              "engine": "6.0L V8",
+              "power": "420 bhp",
+              "transmission": "5-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "virage-coupe-6.0-v8-4a",
+              "displayName": "Virage Coupe",
+              "engine": "6.0L V8",
+              "power": "420 bhp",
+              "transmission": "4-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "virage-volante-6.0-v8-4a",
+              "displayName": "Virage Volante",
+              "engine": "6.0L V8",
+              "power": "420 bhp",
+              "transmission": "4-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db7",
+      "name": "DB7",
+      "era": "1994–2003",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db7-coupe-3.2-sc-i6-5m",
+              "displayName": "DB7 Coupe",
+              "engine": "3.2L Supercharged Inline-6",
+              "power": "335 bhp",
+              "transmission": "5-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "db7-coupe-3.2-sc-i6-4a",
+              "displayName": "DB7 Coupe",
+              "engine": "3.2L Supercharged Inline-6",
+              "power": "335 bhp",
+              "transmission": "4-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "db7-volante-3.2-sc-i6-4a",
+              "displayName": "DB7 Volante",
+              "engine": "3.2L Supercharged Inline-6",
+              "power": "335 bhp",
+              "transmission": "4-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db7-vantage",
+      "name": "DB7 Vantage",
+      "era": "1999–2004",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db7v-coupe-4.0-v8-6m",
+              "displayName": "DB7 Vantage Coupe",
+              "engine": "4.0L V8",
+              "power": "420 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "db7v-coupe-4.0-v8-5a",
+              "displayName": "DB7 Vantage Coupe",
+              "engine": "4.0L V8",
+              "power": "420 bhp",
+              "transmission": "5-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "db7v-volante-4.0-v8-5a",
+              "displayName": "DB7 Vantage Volante",
+              "engine": "4.0L V8",
+              "power": "420 bhp",
+              "transmission": "5-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vanquish-gen1",
+      "name": "Vanquish",
+      "era": "2001–2007",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "vanq1-coupe-6.0-v12-6m",
+              "displayName": "Vanquish Coupe",
+              "engine": "6.0L V12",
+              "power": "460 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "vanq1-coupe-6.0-v12-6a",
+              "displayName": "Vanquish Coupe",
+              "engine": "6.0L V12",
+              "power": "460 bhp",
+              "transmission": "6-speed Automatic (Touchtronic)",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db9",
+      "name": "DB9",
+      "era": "2004–2016",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db9-coupe-6.0-v12-6m",
+              "displayName": "DB9 Coupe",
+              "engine": "6.0L V12",
+              "power": "450 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "db9-coupe-6.0-v12-6a",
+              "displayName": "DB9 Coupe",
+              "engine": "6.0L V12",
+              "power": "517 bhp",
+              "transmission": "6-speed Automatic (Touchtronic)",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "db9-volante-6.0-v12-6a",
+              "displayName": "DB9 Volante",
+              "engine": "6.0L V12",
+              "power": "517 bhp",
+              "transmission": "6-speed Automatic (Touchtronic)",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v8-vantage",
+      "name": "V8 Vantage",
+      "era": "2005–2017",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "v8v-coupe-4.3-v8-6m",
+              "displayName": "V8 Vantage Coupe",
+              "engine": "4.3L V8",
+              "power": "380 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "v8v-coupe-4.7-v8-6m",
+              "displayName": "V8 Vantage Coupe",
+              "engine": "4.7L V8",
+              "power": "426 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "v8v-coupe-4.7-v8-sportshift",
+              "displayName": "V8 Vantage Coupe",
+              "engine": "4.7L V8",
+              "power": "426 bhp",
+              "transmission": "Sportshift II Automated Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "roadster",
+          "name": "Roadster",
+          "configurations": [
+            {
+              "id": "v8v-roadster-4.7-v8-6m",
+              "displayName": "V8 Vantage Roadster",
+              "engine": "4.7L V8",
+              "power": "426 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "v8v-roadster-4.7-v8-sportshift",
+              "displayName": "V8 Vantage Roadster",
+              "engine": "4.7L V8",
+              "power": "426 bhp",
+              "transmission": "Sportshift II Automated Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v12-vantage",
+      "name": "V12 Vantage",
+      "era": "2009–2018",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "v12v-coupe-6.0-v12-6m",
+              "displayName": "V12 Vantage Coupe",
+              "engine": "6.0L V12",
+              "power": "510 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "v12v-coupe-6.0-v12-sportshift",
+              "displayName": "V12 Vantage Coupe",
+              "engine": "6.0L V12",
+              "power": "510 bhp",
+              "transmission": "Sportshift II Automated Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "roadster",
+          "name": "Roadster",
+          "configurations": [
+            {
+              "id": "v12v-roadster-6.0-v12-6m",
+              "displayName": "V12 Vantage Roadster",
+              "engine": "6.0L V12",
+              "power": "510 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dbs-2007",
+      "name": "DBS",
+      "era": "2007–2012",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "dbs-coupe-6.0-v12-6m",
+              "displayName": "DBS Coupe",
+              "engine": "6.0L V12",
+              "power": "510 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "dbs-coupe-6.0-v12-6a",
+              "displayName": "DBS Coupe",
+              "engine": "6.0L V12",
+              "power": "510 bhp",
+              "transmission": "6-speed Automatic (Touchtronic)",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "dbs-volante-6.0-v12-6a",
+              "displayName": "DBS Volante",
+              "engine": "6.0L V12",
+              "power": "510 bhp",
+              "transmission": "6-speed Automatic (Touchtronic)",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rapide",
+      "name": "Rapide",
+      "era": "2010–2013",
+      "bodyStyles": [
+        {
+          "id": "saloon",
+          "name": "Saloon",
+          "configurations": [
+            {
+              "id": "rapide-saloon-6.0-v12-6a",
+              "displayName": "Rapide Saloon",
+              "engine": "6.0L V12",
+              "power": "470 bhp",
+              "transmission": "6-speed Automatic (Touchtronic)",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rapide-s",
+      "name": "Rapide S",
+      "era": "2013–2020",
+      "bodyStyles": [
+        {
+          "id": "saloon",
+          "name": "Saloon",
+          "configurations": [
+            {
+              "id": "rapide-s-saloon-6.0-v12-8a",
+              "displayName": "Rapide S Saloon",
+              "engine": "6.0L V12",
+              "power": "552 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "rapide-s-saloon-4.0-tt-v8-8a",
+              "displayName": "Rapide S Saloon",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "503 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cygnet",
+      "name": "Cygnet",
+      "era": "2011–2013",
+      "bodyStyles": [
+        {
+          "id": "hatchback",
+          "name": "Hatchback",
+          "configurations": [
+            {
+              "id": "cygnet-hatch-1.3-i4-cvt",
+              "displayName": "Cygnet Hatchback",
+              "engine": "1.3L Inline-4 (Petrol)",
+              "power": "98 bhp",
+              "transmission": "CVT",
+              "drivetrain": "FWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "one-77",
+      "name": "One-77",
+      "era": "2009–2012",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "one77-coupe-7.3-v12-6a",
+              "displayName": "One-77 Coupe",
+              "engine": "7.3L V12",
+              "power": "750 bhp",
+              "transmission": "6-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vanquish-gen2",
+      "name": "Vanquish",
+      "era": "2012–2018",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "vanq2-coupe-6.0-v12-6m",
+              "displayName": "Vanquish Coupe",
+              "engine": "6.0L V12",
+              "power": "568 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "vanq2-coupe-6.0-v12-8a",
+              "displayName": "Vanquish Coupe",
+              "engine": "6.0L V12",
+              "power": "568 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "vanq2-volante-6.0-v12-8a",
+              "displayName": "Vanquish Volante",
+              "engine": "6.0L V12",
+              "power": "568 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db10",
+      "name": "DB10",
+      "era": "2015",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db10-coupe-4.7-v8-6m",
+              "displayName": "DB10 Coupe",
+              "engine": "4.7L V8",
+              "power": "430 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db11",
+      "name": "DB11",
+      "era": "2016–2023",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db11-coupe-4.0-tt-v8-8a",
+              "displayName": "DB11 Coupe",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "503 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "db11-coupe-5.2-tt-v12-8a",
+              "displayName": "DB11 Coupe",
+              "engine": "5.2L Twin-Turbo V12",
+              "power": "600 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "db11-volante-4.0-tt-v8-8a",
+              "displayName": "DB11 Volante",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "503 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "db11-volante-5.2-tt-v12-8a",
+              "displayName": "DB11 Volante",
+              "engine": "5.2L Twin-Turbo V12",
+              "power": "600 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dbs-superleggera",
+      "name": "DBS Superleggera",
+      "era": "2018–2023",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "dbs-sl-coupe-5.2-tt-v12-8a",
+              "displayName": "DBS Superleggera Coupe",
+              "engine": "5.2L Twin-Turbo V12",
+              "power": "725 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "dbs-sl-volante-5.2-tt-v12-8a",
+              "displayName": "DBS Superleggera Volante",
+              "engine": "5.2L Twin-Turbo V12",
+              "power": "725 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dbs-770",
+      "name": "DBS 770 Ultimate",
+      "era": "2023",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "dbs770-coupe-5.2-tt-v12-8a",
+              "displayName": "DBS 770 Ultimate Coupe",
+              "engine": "5.2L Twin-Turbo V12",
+              "power": "759 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "dbs770-volante-5.2-tt-v12-8a",
+              "displayName": "DBS 770 Ultimate Volante",
+              "engine": "5.2L Twin-Turbo V12",
+              "power": "759 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vantage-modern",
+      "name": "Vantage",
+      "era": "2018–2024",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "vant-m-coupe-4.0-tt-v8-7m",
+              "displayName": "Vantage Coupe",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "503 bhp",
+              "transmission": "7-speed Manual",
+              "drivetrain": "RWD"
+            },
+            {
+              "id": "vant-m-coupe-4.0-tt-v8-8a",
+              "displayName": "Vantage Coupe",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "503 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "roadster",
+          "name": "Roadster",
+          "configurations": [
+            {
+              "id": "vant-m-roadster-4.0-tt-v8-8a",
+              "displayName": "Vantage Roadster",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "503 bhp",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vantage-2024",
+      "name": "Vantage",
+      "era": "2024–present",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "vant24-coupe-4.0-tt-v8-8a",
+              "displayName": "Vantage Coupe",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "665 PS",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "roadster",
+          "name": "Roadster",
+          "configurations": [
+            {
+              "id": "vant24-roadster-4.0-tt-v8-8a",
+              "displayName": "Vantage Roadster",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "665 PS",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dbx",
+      "name": "DBX",
+      "era": "2020–2024",
+      "bodyStyles": [
+        {
+          "id": "suv",
+          "name": "SUV",
+          "configurations": [
+            {
+              "id": "dbx-suv-4.0-tt-v8-9a",
+              "displayName": "DBX SUV",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "542 bhp",
+              "transmission": "9-speed Automatic",
+              "drivetrain": "AWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dbx707",
+      "name": "DBX707",
+      "era": "2022–present",
+      "bodyStyles": [
+        {
+          "id": "suv",
+          "name": "SUV",
+          "configurations": [
+            {
+              "id": "dbx707-suv-4.0-tt-v8-9a",
+              "displayName": "DBX707 SUV",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "697 bhp",
+              "transmission": "9-speed Automatic",
+              "drivetrain": "AWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "db12",
+      "name": "DB12",
+      "era": "2023–present",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "db12-coupe-4.0-tt-v8-8a",
+              "displayName": "DB12 Coupe",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "680 PS",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "db12-volante-4.0-tt-v8-8a",
+              "displayName": "DB12 Volante",
+              "engine": "4.0L Twin-Turbo V8",
+              "power": "680 PS",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vanquish-2024",
+      "name": "Vanquish",
+      "era": "2024–present",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "vanq24-coupe-5.2-tt-v12-8a",
+              "displayName": "Vanquish Coupe",
+              "engine": "5.2L Twin-Turbo V12",
+              "power": "835 PS",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        },
+        {
+          "id": "volante",
+          "name": "Volante",
+          "configurations": [
+            {
+              "id": "vanq24-volante-5.2-tt-v12-8a",
+              "displayName": "Vanquish Volante",
+              "engine": "5.2L Twin-Turbo V12",
+              "power": "835 PS",
+              "transmission": "8-speed Automatic",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "valour",
+      "name": "Valour",
+      "era": "2023",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "valour-coupe-5.2-v12-6m",
+              "displayName": "Valour Coupe",
+              "engine": "5.2L V12",
+              "power": "705 bhp",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "valiant",
+      "name": "Valiant",
+      "era": "2024",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "valiant-coupe-5.2-tt-v12-6m",
+              "displayName": "Valiant Coupe",
+              "engine": "5.2L Twin-Turbo V12",
+              "power": "745 PS",
+              "transmission": "6-speed Manual",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "valhalla",
+      "name": "Valhalla",
+      "era": "2024–present",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "valhalla-coupe-4.0-tt-v8-hybrid-8dct",
+              "displayName": "Valhalla Coupe",
+              "engine": "4.0L Twin-Turbo V8 Plug-in Hybrid",
+              "power": "1079 PS",
+              "transmission": "8-speed Dual-Clutch",
+              "drivetrain": "AWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "valkyrie",
+      "name": "Valkyrie",
+      "era": "2021–present",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Coupe",
+          "configurations": [
+            {
+              "id": "valkyrie-coupe-6.5-v12-hybrid-7s",
+              "displayName": "Valkyrie Coupe",
+              "engine": "6.5L V12 Hybrid",
+              "power": "1160 bhp",
+              "transmission": "7-speed Sequential",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vulcan",
+      "name": "Vulcan",
+      "era": "2015–2016",
+      "bodyStyles": [
+        {
+          "id": "coupe",
+          "name": "Track Coupe",
+          "configurations": [
+            {
+              "id": "vulcan-track-7.0-v12-6s",
+              "displayName": "Vulcan Track Coupe",
+              "engine": "7.0L V12",
+              "power": "820 bhp",
+              "transmission": "6-speed Sequential",
+              "drivetrain": "RWD"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

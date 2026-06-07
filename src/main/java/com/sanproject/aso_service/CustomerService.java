@@ -4,13 +4,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+// Customer CRUD; create triggers a registration welcome email.
 @Service
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final CustomerNotificationService notificationService;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(
+            CustomerRepository customerRepository,
+            CustomerNotificationService notificationService) {
         this.customerRepository = customerRepository;
+        this.notificationService = notificationService;
     }
 
     public List<Customer> getAllCustomers() {
@@ -22,6 +27,8 @@ public class CustomerService {
     }
 
     public Customer createCustomer(Customer customer) {
-        return customerRepository.save(customer);
+        Customer saved = customerRepository.save(customer);
+        notificationService.notifyRegistered(saved);
+        return saved;
     }
 }

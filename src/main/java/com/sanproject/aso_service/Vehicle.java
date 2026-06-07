@@ -3,6 +3,7 @@ package com.sanproject.aso_service;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+// Customer-owned vehicle; catalog fields are copied at creation. removedFromAccount is a soft delete.
 @Entity
 public class Vehicle {
 
@@ -16,21 +17,34 @@ public class Vehicle {
     @NotBlank(message = "VIN is required")
     private String vin;
 
+    private String securityCode;
+
+    private String configurationId;
+
+    private String modelLine;
+
+    private String productionEra;
+
     private Integer productionYear;
+
+    private String bodyStyle;
+
+    private String engine;
+
+    private String power;
+
+    private String transmission;
+
+    private String drivetrain;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    public Vehicle() {
-    }
+    // True when the customer removes the car from their account (row is kept for booking history).
+    private boolean removedFromAccount;
 
-    public Vehicle(Long id, String model, String vin, Integer productionYear, Customer customer) {
-        this.id = id;
-        this.model = model;
-        this.vin = vin;
-        this.productionYear = productionYear;
-        this.customer = customer;
+    public Vehicle() {
     }
 
     public Long getId() {
@@ -45,12 +59,52 @@ public class Vehicle {
         return vin;
     }
 
+    public String getSecurityCode() {
+        return securityCode;
+    }
+
+    public String getConfigurationId() {
+        return configurationId;
+    }
+
+    public String getModelLine() {
+        return modelLine;
+    }
+
+    public String getProductionEra() {
+        return productionEra;
+    }
+
     public Integer getProductionYear() {
         return productionYear;
     }
 
+    public String getBodyStyle() {
+        return bodyStyle;
+    }
+
+    public String getEngine() {
+        return engine;
+    }
+
+    public String getPower() {
+        return power;
+    }
+
+    public String getTransmission() {
+        return transmission;
+    }
+
+    public String getDrivetrain() {
+        return drivetrain;
+    }
+
     public Customer getCustomer() {
         return customer;
+    }
+
+    public boolean isRemovedFromAccount() {
+        return removedFromAccount;
     }
 
     public void setId(Long id) {
@@ -65,11 +119,51 @@ public class Vehicle {
         this.vin = vin;
     }
 
+    public void setSecurityCode(String securityCode) {
+        this.securityCode = securityCode;
+    }
+
+    public void setConfigurationId(String configurationId) {
+        this.configurationId = configurationId;
+    }
+
+    public void setModelLine(String modelLine) {
+        this.modelLine = modelLine;
+    }
+
+    public void setProductionEra(String productionEra) {
+        this.productionEra = productionEra;
+    }
+
     public void setProductionYear(Integer productionYear) {
         this.productionYear = productionYear;
     }
 
+    public void setBodyStyle(String bodyStyle) {
+        this.bodyStyle = bodyStyle;
+    }
+
+    public void setEngine(String engine) {
+        this.engine = engine;
+    }
+
+    public void setPower(String power) {
+        this.power = power;
+    }
+
+    public void setTransmission(String transmission) {
+        this.transmission = transmission;
+    }
+
+    public void setDrivetrain(String drivetrain) {
+        this.drivetrain = drivetrain;
+    }
+
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public void setRemovedFromAccount(boolean removedFromAccount) {
+        this.removedFromAccount = removedFromAccount;
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+// Sends multipart HTML emails via SMTP; optional PDF attachment for completion invoices.
 @Service
 public class MailService {
 

@@ -9,6 +9,7 @@ import org.springframework.web.client.RestClientException;
 
 import java.util.Optional;
 
+// HTTP client for the Clojure email-renderer; failures return empty instead of throwing.
 @Component
 public class EmailRendererClient {
 
@@ -33,6 +34,21 @@ public class EmailRendererClient {
         } catch (RestClientException ex) {
             log.warn("Failed to render booking email for booking {}: {}",
                     payload.getBookingId(), ex.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public Optional<RenderedEmail> renderCustomer(CustomerEmailPayload payload) {
+        try {
+            RenderedEmail rendered = restClient.post()
+                    .uri("/render/customer-email")
+                    .body(payload)
+                    .retrieve()
+                    .body(RenderedEmail.class);
+            return Optional.ofNullable(rendered);
+        } catch (RestClientException ex) {
+            log.warn("Failed to render customer email for event {}: {}",
+                    payload.getEvent(), ex.getMessage());
             return Optional.empty();
         }
     }

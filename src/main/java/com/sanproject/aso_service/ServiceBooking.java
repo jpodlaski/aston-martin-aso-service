@@ -1,17 +1,24 @@
 package com.sanproject.aso_service;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+// Service request for one vehicle; status drives the workshop workflow and email events.
 @Entity
 public class ServiceBooking {
 
@@ -29,31 +36,48 @@ public class ServiceBooking {
     @NotBlank(message = "Car model is required")
     private String carModel;
 
-    @NotBlank(message = "Service type is required")
-    private String serviceType;
+    @Column(length = 2000)
+    private String customerDescription;
 
+    // Populated when a worker claims the booking; lazy-loaded unless explicitly fetched.
+    @ElementCollection
+    @CollectionTable(name = "booking_service_types", joinColumns = @JoinColumn(name = "booking_id"))
+    @Column(name = "service_type")
+    private List<String> serviceTypes = new ArrayList<>();
+
+    // New bookings start SCHEDULED until a worker claims them.
     @Enumerated
     private BookingStatus status = BookingStatus.SCHEDULED;
 
+    @ManyToOne
+    @JoinColumn(name = "assigned_worker_id")
+    private Worker assignedWorker;
+
     private BigDecimal estimatedCost;
+
+    private BigDecimal finalCost;
+
+    private LocalDateTime estimatedDropOffTime;
+
+    @Column(length = 500)
+    private String availabilityNotes;
+
+    private LocalDateTime scheduledDateTime;
+
+    @Column(length = 500)
+    private String cancellationReason;
+
+    @Enumerated(EnumType.STRING)
+    private CancelledBy cancelledBy;
 
     public ServiceBooking() {
     }
 
-    public ServiceBooking(Long id, String customerName, String carModel, String serviceType, BookingStatus status, Vehicle vehicle) {
-        this.id = id;
-        this.customerName = customerName;
-        this.carModel = carModel;
-        this.serviceType = serviceType;
-        this.status = status;
-        this.vehicle = vehicle;
-    }
-
-    public Vehicle getVehicle(){
+    public Vehicle getVehicle() {
         return vehicle;
     }
 
-    public void setVehicle(Vehicle vehicle){
+    public void setVehicle(Vehicle vehicle) {
         this.vehicle = vehicle;
     }
 
@@ -69,8 +93,12 @@ public class ServiceBooking {
         return carModel;
     }
 
-    public String getServiceType() {
-        return serviceType;
+    public String getCustomerDescription() {
+        return customerDescription;
+    }
+
+    public List<String> getServiceTypes() {
+        return serviceTypes;
     }
 
     public BookingStatus getStatus() {
@@ -89,8 +117,12 @@ public class ServiceBooking {
         this.carModel = carModel;
     }
 
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
+    public void setCustomerDescription(String customerDescription) {
+        this.customerDescription = customerDescription;
+    }
+
+    public void setServiceTypes(List<String> serviceTypes) {
+        this.serviceTypes = serviceTypes;
     }
 
     public void setStatus(BookingStatus status) {
@@ -103,5 +135,61 @@ public class ServiceBooking {
 
     public void setEstimatedCost(BigDecimal estimatedCost) {
         this.estimatedCost = estimatedCost;
+    }
+
+    public Worker getAssignedWorker() {
+        return assignedWorker;
+    }
+
+    public void setAssignedWorker(Worker assignedWorker) {
+        this.assignedWorker = assignedWorker;
+    }
+
+    public BigDecimal getFinalCost() {
+        return finalCost;
+    }
+
+    public void setFinalCost(BigDecimal finalCost) {
+        this.finalCost = finalCost;
+    }
+
+    public LocalDateTime getEstimatedDropOffTime() {
+        return estimatedDropOffTime;
+    }
+
+    public void setEstimatedDropOffTime(LocalDateTime estimatedDropOffTime) {
+        this.estimatedDropOffTime = estimatedDropOffTime;
+    }
+
+    public String getAvailabilityNotes() {
+        return availabilityNotes;
+    }
+
+    public void setAvailabilityNotes(String availabilityNotes) {
+        this.availabilityNotes = availabilityNotes;
+    }
+
+    public LocalDateTime getScheduledDateTime() {
+        return scheduledDateTime;
+    }
+
+    public void setScheduledDateTime(LocalDateTime scheduledDateTime) {
+        this.scheduledDateTime = scheduledDateTime;
+    }
+
+    public String getCancellationReason() {
+        return cancellationReason;
+    }
+
+    public void setCancellationReason(String cancellationReason) {
+        this.cancellationReason = cancellationReason;
+    }
+
+    public CancelledBy getCancelledBy() {
+        return cancelledBy;
+    }
+
+    public void setCancelledBy(CancelledBy cancelledBy) {
+        this.cancelledBy = cancelledBy;
     }
 }

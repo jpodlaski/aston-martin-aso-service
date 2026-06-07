@@ -1,0 +1,120 @@
+.vehicle-configurator {
+  text-align: left;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+.config-step {
+  margin-bottom: 1.5rem;
+  scroll-margin-top: 1rem;
+}
+
+.config-step h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.option-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.option-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.option-btn:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+.option-btn.selected {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  box-shadow: inset 0 0 0 1px var(--accent-border);
+}
+
+.option-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.config-summary {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  background: var(--code-bg);
+}
+
+.config-summary p {
+  margin: 0.25rem 0;
+}
+
+.vin-field {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  background: var(--bg);
+  color: var(--text-h);
+}
+
+.submit-vehicle-btn {
+  margin-top: 1rem;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text-h);
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit-vehicle-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.config-error {
+  color: #b42318;
+  margin-top: 0.75rem;
+}
+
+.config-success {
+  color: #027a48;
+  margin-top: 0.75rem;
+}
+
+.vehicle-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
+.vehicle-card h4 {
+  margin: 0 0 0.5rem;
+  color: var(--text-h);
+}
+
+.vehicle-card p {
+  margin: 0.15rem 0;
+  font-size: 0.95rem;
+}
