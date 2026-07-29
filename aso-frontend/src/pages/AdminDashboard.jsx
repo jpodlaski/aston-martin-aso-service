@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ChangePasswordForm from "../components/ChangePasswordForm";
 import { ASSIGNABLE_ROLES, roleLabel } from "../constants/roles";
 import { api } from "../services/api";
 import { clearSession, getSession } from "../services/auth";
@@ -20,11 +21,10 @@ function formatCancelledBy(value) {
     return labels[value] ?? value;
 }
 
-// Worker management and booking history; requesterId authorizes admin API calls.
+// Worker management and booking history; authorization comes from the JWT.
 export default function AdminDashboard() {
     const navigate = useNavigate();
     const session = getSession();
-    const requesterId = session?.id;
 
     const [workers, setWorkers] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -62,14 +62,14 @@ export default function AdminDashboard() {
         setBookingsLoading(true);
         setBookingsError("");
         try {
-            const res = await api.get("/admins/bookings", { params: { requesterId } });
+            const res = await api.get("/admins/bookings");
             setBookings(res.data);
         } catch {
             setBookingsError("Could not load booking history.");
         } finally {
             setBookingsLoading(false);
         }
-    }, [requesterId]);
+    }, []);
 
     useEffect(() => {
         loadWorkers();
@@ -95,7 +95,6 @@ export default function AdminDashboard() {
                 login,
                 password,
                 role,
-                requesterId,
             });
             setFormSuccess("Worker account created.");
             setFirstName("");
@@ -122,9 +121,7 @@ export default function AdminDashboard() {
         setError("");
 
         try {
-            await api.delete(`/admins/workers/${worker.id}`, {
-                params: { requesterId },
-            });
+            await api.delete(`/admins/workers/${worker.id}`);
             loadWorkers();
         } catch (err) {
             setError(err.response?.data?.message ?? "Could not delete worker.");
@@ -142,7 +139,6 @@ export default function AdminDashboard() {
         try {
             await api.patch(`/admins/workers/${worker.id}/role`, {
                 role: newRole,
-                requesterId,
             });
             loadWorkers();
         } catch (err) {
@@ -298,6 +294,8 @@ export default function AdminDashboard() {
                     </div>
                 ))}
             </section>
+
+            <ChangePasswordForm />
         </div>
     );
 }

@@ -18,4 +18,11 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    files: ['**/*.{js,jsx}'],
+    rules: {
+      // Async data loading in useEffect is the pattern used across dashboards.
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
 ])

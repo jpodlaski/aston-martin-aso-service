@@ -7,7 +7,7 @@ import "../components/DashboardLayout.css";
 // Creates a SCHEDULED booking; at least drop-off time or availability notes required by API.
 export default function RequestService() {
     const navigate = useNavigate();
-    const customerId = getSession()?.id;
+    const session = getSession();
 
     const [vehicles, setVehicles] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -20,11 +20,11 @@ export default function RequestService() {
     const [availabilityNotes, setAvailabilityNotes] = useState("");
 
     const loadVehicles = useCallback(async () => {
-        if (!customerId) return;
+        if (!session?.token) return;
         setLoading(true);
         setError("");
         try {
-            const res = await api.get(`/vehicles/customer/${customerId}`);
+            const res = await api.get("/vehicles/me");
             setVehicles(res.data);
             setVehicleId((current) => current || (res.data[0] ? String(res.data[0].id) : ""));
         } catch {
@@ -32,7 +32,7 @@ export default function RequestService() {
         } finally {
             setLoading(false);
         }
-    }, [customerId]);
+    }, [session?.token]);
 
     useEffect(() => {
         loadVehicles();

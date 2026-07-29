@@ -41,11 +41,14 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/aso_service_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
       MAIL_HOST: mailhog
       MAIL_PORT: 1025
       MAIL_FROM: noreply@aston-martin-aso.local
       EMAIL_RENDERER_URL: http://email-renderer:3000
+      APP_JWT_SECRET: aso-service-dev-jwt-secret-change-me-32chars-min
+      APP_JWT_EXPIRATION_MS: "86400000"
 
   frontend:
     build:

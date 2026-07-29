@@ -4,22 +4,11 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-// Worker records the agreed appointment after coordinating with the customer by phone.
+// Worker records the agreed appointment; actor comes from the JWT.
 public class ScheduleBookingRequest {
-
-    @NotNull(message = "Worker ID is required")
-    private Long workerId;
 
     @NotNull(message = "Scheduled date and time is required")
     private LocalDateTime scheduledDateTime;
-
-    public Long getWorkerId() {
-        return workerId;
-    }
-
-    public void setWorkerId(Long workerId) {
-        this.workerId = workerId;
-    }
 
     public LocalDateTime getScheduledDateTime() {
         return scheduledDateTime;

@@ -6,7 +6,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-// Workshop staff CRUD; mutating calls require an authorized requester (admin, CEO, or COO).
+// Workshop staff CRUD; mutating calls require management (enforced by caller via AuthSupport).
 @Service
 public class WorkerService {
 
@@ -14,19 +14,16 @@ public class WorkerService {
     private final AdminRepository adminRepository;
     private final ServiceBookingRepository bookingRepository;
     private final PasswordService passwordService;
-    private final EmployeeAuthorizationService authorizationService;
 
     public WorkerService(
             WorkerRepository workerRepository,
             AdminRepository adminRepository,
             ServiceBookingRepository bookingRepository,
-            PasswordService passwordService,
-            EmployeeAuthorizationService authorizationService) {
+            PasswordService passwordService) {
         this.workerRepository = workerRepository;
         this.adminRepository = adminRepository;
         this.bookingRepository = bookingRepository;
         this.passwordService = passwordService;
-        this.authorizationService = authorizationService;
     }
 
     public List<Worker> getAllWorkers() {
@@ -38,12 +35,10 @@ public class WorkerService {
     }
 
     public Worker createWorker(CreateWorkerRequest request) {
-        authorizationService.requireCanManageWorkers(request.getRequesterId());
         validateAssignableRole(request.getRole());
 
         String login = request.getLogin().trim();
 
-        // Logins must be unique across both worker and admin tables.
         if (workerRepository.findByLoginIgnoreCase(login).isPresent()
                 || adminRepository.findByLoginIgnoreCase(login).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Login already in use");
@@ -61,7 +56,6 @@ public class WorkerService {
     }
 
     public Worker updateWorkerRole(Long id, UpdateWorkerRoleRequest request) {
-        authorizationService.requireCanManageWorkers(request.getRequesterId());
         validateAssignableRole(request.getRole());
 
         Worker worker = workerRepository.findById(id)
@@ -71,13 +65,10 @@ public class WorkerService {
         return workerRepository.save(worker);
     }
 
-    public void deleteWorker(Long id, Long requesterId) {
-        authorizationService.requireCanManageWorkers(requesterId);
-
+    public void deleteWorker(Long id) {
         Worker worker = workerRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
-        // Block delete while bookings still reference this worker.
         if (!bookingRepository.findByAssignedWorkerId(id).isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,

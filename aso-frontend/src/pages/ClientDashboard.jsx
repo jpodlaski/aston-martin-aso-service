@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ChangePasswordForm from "../components/ChangePasswordForm";
 import { api } from "../services/api";
 import { clearSession, getSession } from "../services/auth";
 import { formatCustomerDateTime } from "../utils/dateTime";
@@ -22,7 +23,6 @@ function isOpenBooking(status) {
 export default function ClientDashboard() {
     const navigate = useNavigate();
     const session = getSession();
-    const customerId = session?.id;
 
     const [vehicles, setVehicles] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -34,13 +34,13 @@ export default function ClientDashboard() {
     const [cancellingBookingId, setCancellingBookingId] = useState(null);
 
     const loadData = useCallback(async () => {
-        if (!customerId) return;
+        if (!session?.token) return;
         setLoading(true);
         setError("");
         try {
             const [vehiclesRes, bookingsRes] = await Promise.all([
-                api.get(`/vehicles/customer/${customerId}`),
-                api.get(`/customers/${customerId}/bookings`),
+                api.get("/vehicles/me"),
+                api.get("/customers/me/bookings"),
             ]);
             setVehicles(vehiclesRes.data);
             setBookings(bookingsRes.data);
@@ -49,7 +49,7 @@ export default function ClientDashboard() {
         } finally {
             setLoading(false);
         }
-    }, [customerId]);
+    }, [session?.token]);
 
     useEffect(() => {
         loadData();
@@ -90,7 +90,7 @@ export default function ClientDashboard() {
         setRemovingVehicleId(vehicle.id);
 
         try {
-            await api.delete(`/vehicles/${vehicle.id}/customer/${customerId}`);
+            await api.delete(`/vehicles/${vehicle.id}`);
             loadData();
         } catch (err) {
             setVehicleError(err.response?.data?.message ?? "Could not remove vehicle.");
@@ -107,7 +107,7 @@ export default function ClientDashboard() {
         setCancellingBookingId(booking.id);
 
         try {
-            await api.post(`/bookings/${booking.id}/cancel`, { customerId });
+            await api.post(`/bookings/${booking.id}/cancel`, {});
             loadData();
         } catch (err) {
             setBookingError(err.response?.data?.message ?? "Could not cancel booking.");
@@ -214,6 +214,8 @@ export default function ClientDashboard() {
                     </div>
                 ))}
             </section>
+
+            <ChangePasswordForm />
         </div>
     );
 }

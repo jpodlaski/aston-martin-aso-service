@@ -14,43 +14,44 @@ public class BookingService {
 
     private final ServiceBookingRepository bookingRepository;
     private final VehicleRepository vehicleRepository;
-    private final WorkerRepository workerRepository;
     private final BookingNotificationService notificationService;
 
     public BookingService(
             ServiceBookingRepository bookingRepository,
             VehicleRepository vehicleRepository,
-            WorkerRepository workerRepository,
             BookingNotificationService notificationService) {
         this.bookingRepository = bookingRepository;
         this.vehicleRepository = vehicleRepository;
-        this.workerRepository = workerRepository;
         this.notificationService = notificationService;
     }
 
     public List<ServiceBooking> getAllBookings() {
-        return bookingRepository.findAll();
+        return bookingRepository.findAllWithDetails();
     }
 
     public ServiceBooking getBookingById(Long id) {
-        return bookingRepository.findById(id).orElse(null);
+        return bookingRepository.findByIdWithDetails(id).orElse(null);
     }
 
     public List<ServiceBooking> getAvailableBookings() {
-        return bookingRepository.findByAssignedWorkerIsNullAndStatus(BookingStatus.SCHEDULED);
+        return bookingRepository.findAvailableWithDetails(BookingStatus.SCHEDULED);
     }
 
     public List<ServiceBooking> getBookingsByWorkerId(Long workerId) {
-        return bookingRepository.findByAssignedWorkerId(workerId);
+        return bookingRepository.findByWorkerIdWithDetails(workerId);
     }
 
-    public ServiceBooking createBooking(CreateBookingRequest request) {
+    public ServiceBooking createBooking(CreateBookingRequest request, Long customerId) {
         validateAvailability(request);
 
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId()).orElse(null);
 
-        if (vehicle == null) {
+        if (vehicle == null || vehicle.isRemovedFromAccount()) {
             return null;
+        }
+
+        if (vehicle.getCustomer() == null || !vehicle.getCustomer().getId().equals(customerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vehicle does not belong to this customer");
         }
 
         ServiceBooking booking = new ServiceBooking();
@@ -62,29 +63,20 @@ public class BookingService {
         booking.setCarModel(vehicle.getModel());
 
         Customer customer = vehicle.getCustomer();
-        if (customer != null) {
-            booking.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
-        }
+        booking.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
 
         ServiceBooking saved = bookingRepository.save(booking);
-        // Email runs async and reloads the booking by id.
         notificationService.notifyCreated(saved);
-        return saved;
+        return reloadForResponse(saved.getId());
     }
 
-    public ServiceBooking claimBooking(Long id, ClaimBookingRequest request) {
+    public ServiceBooking claimBooking(Long id, ClaimBookingRequest request, Worker worker) {
         ServiceBooking booking = bookingRepository.findById(id).orElse(null);
         if (booking == null) {
             return null;
         }
 
-        // Only unclaimed SCHEDULED bookings can be claimed.
         if (booking.getStatus() != BookingStatus.SCHEDULED || booking.getAssignedWorker() != null) {
-            return null;
-        }
-
-        Worker worker = workerRepository.findById(request.getWorkerId()).orElse(null);
-        if (worker == null) {
             return null;
         }
 
@@ -95,10 +87,10 @@ public class BookingService {
 
         ServiceBooking saved = bookingRepository.save(booking);
         notificationService.notifyTechnicianAssigned(saved);
-        return saved;
+        return reloadForResponse(saved.getId());
     }
 
-    public ServiceBooking scheduleBooking(Long id, ScheduleBookingRequest request) {
+    public ServiceBooking scheduleBooking(Long id, ScheduleBookingRequest request, Worker worker) {
         ServiceBooking booking = bookingRepository.findById(id).orElse(null);
         if (booking == null) {
             return null;
@@ -106,7 +98,7 @@ public class BookingService {
 
         if (booking.getStatus() != BookingStatus.IN_PROGRESS
                 || booking.getAssignedWorker() == null
-                || !booking.getAssignedWorker().getId().equals(request.getWorkerId())) {
+                || !booking.getAssignedWorker().getId().equals(worker.getId())) {
             return null;
         }
 
@@ -115,10 +107,10 @@ public class BookingService {
         booking.setScheduledDateTime(request.getScheduledDateTime());
         ServiceBooking saved = bookingRepository.save(booking);
         notificationService.notifyAppointmentScheduled(saved);
-        return saved;
+        return reloadForResponse(saved.getId());
     }
 
-    public ServiceBooking rejectBooking(Long id, RejectBookingRequest request) {
+    public ServiceBooking rejectBooking(Long id, RejectBookingRequest request, Worker worker) {
         ServiceBooking booking = bookingRepository.findById(id).orElse(null);
         if (booking == null) {
             return null;
@@ -130,21 +122,17 @@ public class BookingService {
                     "Only unclaimed scheduled bookings can be rejected");
         }
 
-        if (workerRepository.findById(request.getWorkerId()).isEmpty()) {
-            return null;
-        }
-
         booking.setStatus(BookingStatus.CANCELLED);
         booking.setCancellationReason(request.getReason().trim());
-        booking.setCancelledBy(CancelledBy.WORKSHOP); // reject is a workshop-initiated cancellation
+        booking.setCancelledBy(CancelledBy.WORKSHOP);
 
         ServiceBooking saved = bookingRepository.save(booking);
         notificationService.notifyRejected(saved);
-        return saved;
+        return reloadForResponse(saved.getId());
     }
 
-    public ServiceBooking cancelBooking(Long id, CancelBookingRequest request) {
-        ServiceBooking booking = bookingRepository.findById(id).orElse(null);
+    public ServiceBooking cancelBooking(Long id, CancelBookingRequest request, AuthUser actor) {
+        ServiceBooking booking = bookingRepository.findByIdWithDetails(id).orElse(null);
         if (booking == null) {
             return null;
         }
@@ -156,25 +144,24 @@ public class BookingService {
                     "Only scheduled or in-progress bookings can be cancelled");
         }
 
-        // Exactly one of customerId or workerId must be provided (XOR).
-        boolean cancelledByCustomer = request.getCustomerId() != null;
-        boolean cancelledByWorker = request.getWorkerId() != null;
-
-        if (cancelledByCustomer == cancelledByWorker) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Provide either customerId or workerId");
-        }
-
-        if (cancelledByCustomer) {
-            if (!ownsBooking(request.getCustomerId(), booking)) {
+        if ("CLIENT".equals(actor.getRole())) {
+            if (!ownsBooking(actor.getId(), booking)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Booking does not belong to this customer");
             }
             booking.setCancelledBy(CancelledBy.CUSTOMER);
-            booking.setCancellationReason(null); // customer cancel needs no reason
+            booking.setCancellationReason(null);
         } else {
+            EmployeeRole role;
+            try {
+                role = EmployeeRole.valueOf(actor.getRole());
+            } catch (IllegalArgumentException ex) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to cancel this booking");
+            }
+            if (!role.isWorkshopStaff()) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to cancel this booking");
+            }
             if (booking.getAssignedWorker() == null
-                    || !booking.getAssignedWorker().getId().equals(request.getWorkerId())) {
+                    || !booking.getAssignedWorker().getId().equals(actor.getId())) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Booking is not assigned to this worker");
             }
             if (request.getReason() == null || request.getReason().isBlank()) {
@@ -187,10 +174,10 @@ public class BookingService {
         booking.setStatus(BookingStatus.CANCELLED);
         ServiceBooking saved = bookingRepository.save(booking);
         notificationService.notifyCancelled(saved);
-        return saved;
+        return reloadForResponse(saved.getId());
     }
 
-    public ServiceBooking completeBooking(Long id, CompleteBookingRequest request) {
+    public ServiceBooking completeBooking(Long id, CompleteBookingRequest request, Worker worker) {
         ServiceBooking booking = bookingRepository.findById(id).orElse(null);
         if (booking == null) {
             return null;
@@ -198,7 +185,7 @@ public class BookingService {
 
         if (booking.getStatus() != BookingStatus.IN_PROGRESS
                 || booking.getAssignedWorker() == null
-                || !booking.getAssignedWorker().getId().equals(request.getWorkerId())) {
+                || !booking.getAssignedWorker().getId().equals(worker.getId())) {
             return null;
         }
 
@@ -208,10 +195,9 @@ public class BookingService {
 
         ServiceBooking saved = bookingRepository.save(booking);
         notificationService.notifyCompleted(saved, previousStatus);
-        return saved;
+        return reloadForResponse(saved.getId());
     }
 
-    // Eager-fetched query avoids lazy-load errors when mapping nested vehicle/worker data.
     public List<AdminBookingResponse> getAdminBookings() {
         return bookingRepository.findAllWithDetails().stream()
                 .map(this::toAdminBookingResponse)
@@ -253,52 +239,53 @@ public class BookingService {
         return response;
     }
 
-    public boolean deleteBooking(Long id) {
-        if (!bookingRepository.existsById(id)) {
-            return false;
-        }
-
-        bookingRepository.deleteById(id);
-        return true;
-    }
-
-    public ServiceBooking updateBooking(Long id, ServiceBooking updatedBooking) {
-        ServiceBooking existingBooking = bookingRepository.findById(id).orElse(null);
-
-        if (existingBooking == null) {
-            return null;
-        }
-
-        existingBooking.setCustomerName(updatedBooking.getCustomerName());
-        existingBooking.setCarModel(updatedBooking.getCarModel());
-        if (updatedBooking.getCustomerDescription() != null) {
-            existingBooking.setCustomerDescription(updatedBooking.getCustomerDescription());
-        }
-        existingBooking.setStatus(updatedBooking.getStatus());
-
-        return bookingRepository.save(existingBooking);
-    }
-
     public List<ServiceBooking> getBookingsByVehicleId(Long vehicleId) {
-        return bookingRepository.findByVehicleId(vehicleId);
+        return bookingRepository.findByVehicleIdWithDetails(vehicleId);
     }
 
     public List<ServiceBooking> getBookingsByCustomerId(Long customerId) {
-        return bookingRepository.findByVehicleCustomerId(customerId);
+        return bookingRepository.findByCustomerIdWithDetails(customerId);
     }
 
-    public ServiceBooking updateStatus(Long id, UpdateBookingStatusRequest request) {
-        ServiceBooking booking = bookingRepository.findById(id).orElse(null);
+    // Reload with JOIN FETCH so JSON serialization works with open-in-view=false.
+    private ServiceBooking reloadForResponse(Long id) {
+        return bookingRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
+    }
 
-        if (booking == null) {
-            return null;
+    // CLIENT: own bookings. Workshop: available queue or assigned. Management: all.
+    public void assertCanView(AuthUser user, ServiceBooking booking) {
+        if ("CLIENT".equals(user.getRole())) {
+            if (!ownsBooking(user.getId(), booking)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Booking does not belong to this customer");
+            }
+            return;
         }
 
-        BookingStatus previousStatus = booking.getStatus();
-        booking.setStatus(request.getStatus());
-        ServiceBooking saved = bookingRepository.save(booking);
-        notificationService.notifyStatusChanged(saved, previousStatus);
-        return saved;
+        EmployeeRole role;
+        try {
+            role = EmployeeRole.valueOf(user.getRole());
+        } catch (IllegalArgumentException | NullPointerException ex) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to view this booking");
+        }
+
+        if (role.canManageWorkers()) {
+            return;
+        }
+
+        if (role.isWorkshopStaff()) {
+            if (booking.getAssignedWorker() != null
+                    && booking.getAssignedWorker().getId().equals(user.getId())) {
+                return;
+            }
+            if (booking.getAssignedWorker() == null
+                    && booking.getStatus() == BookingStatus.SCHEDULED) {
+                return;
+            }
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to view this booking");
+        }
+
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to view this booking");
     }
 
     private boolean ownsBooking(Long customerId, ServiceBooking booking) {
@@ -308,7 +295,6 @@ public class BookingService {
                 && vehicle.getCustomer().getId().equals(customerId);
     }
 
-    // Customer must supply at least a preferred drop-off time or free-text availability notes.
     private void validateAvailability(CreateBookingRequest request) {
         boolean hasTime = request.getEstimatedDropOffTime() != null;
         boolean hasNotes = request.getAvailabilityNotes() != null

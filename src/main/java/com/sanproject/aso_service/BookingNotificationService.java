@@ -16,10 +16,6 @@ public class BookingNotificationService {
         executor.send(booking.getId(), "created", null);
     }
 
-    public void notifyStatusChanged(ServiceBooking booking, BookingStatus previousStatus) {
-        executor.send(booking.getId(), "status_changed", previousStatus);
-    }
-
     public void notifyCompleted(ServiceBooking booking, BookingStatus previousStatus) {
         executor.send(booking.getId(), "booking_completed", previousStatus);
     }

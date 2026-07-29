@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-// New workshop account; requesterId identifies the admin/CEO/COO performing the action.
+// New workshop account; caller must be management (enforced via JWT).
 public class CreateWorkerRequest {
 
     @NotBlank(message = "First name is required")
@@ -25,9 +25,6 @@ public class CreateWorkerRequest {
 
     @NotNull(message = "Role is required")
     private EmployeeRole role;
-
-    @NotNull(message = "Requester ID is required")
-    private Long requesterId;
 
     public String getFirstName() {
         return firstName;
@@ -75,13 +72,5 @@ public class CreateWorkerRequest {
 
     public void setRole(EmployeeRole role) {
         this.role = role;
-    }
-
-    public Long getRequesterId() {
-        return requesterId;
-    }
-
-    public void setRequesterId(Long requesterId) {
-        this.requesterId = requesterId;
     }
 }

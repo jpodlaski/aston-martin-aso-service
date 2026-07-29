@@ -1,6 +1,6 @@
 import { MANAGEMENT_ROLES, WORKSHOP_ROLES } from "../constants/roles";
 
-// Client-side session only; no expiry — logout clears this key.
+// Client-side session only; no expiry — logout clears this key. Token is the API Bearer JWT.
 const SESSION_KEY = "aso_session";
 
 export function saveSession(session) {
@@ -11,7 +11,10 @@ export function getSession() {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
     try {
-        return JSON.parse(raw);
+        const session = JSON.parse(raw);
+        // Sessions from before JWT auth have no token and cannot call the API.
+        if (!session?.token) return null;
+        return session;
     } catch {
         return null;
     }

@@ -20,7 +20,7 @@ function scrollToRef(ref) {
 }
 
 // Multi-step Aston Martin picker; posts configurationId + VIN to the API.
-export default function VehicleConfigurator({ customerId, onVehicleAdded }) {
+export default function VehicleConfigurator({ onVehicleAdded }) {
     const [catalog, setCatalog] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -147,7 +147,7 @@ export default function VehicleConfigurator({ customerId, onVehicleAdded }) {
         setSuccess("");
 
         try {
-            await api.post(`/vehicles/customer/${customerId}`, {
+            await api.post("/vehicles/me", {
                 configurationId,
                 productionYear: Number(productionYear),
                 vin: vin.trim(),

@@ -1,8 +1,9 @@
 package com.sanproject.aso_service;
 
-// Returned on login/register; stored in the frontend session (role drives routing).
+// Returned on login/register; token is the Bearer JWT; role/id/name drive frontend routing.
 public class AuthResponse {
 
+    private String token;
     private String role;
     private Long id;
     private String name;
@@ -10,10 +11,19 @@ public class AuthResponse {
     public AuthResponse() {
     }
 
-    public AuthResponse(String role, Long id, String name) {
+    public AuthResponse(String token, String role, Long id, String name) {
+        this.token = token;
         this.role = role;
         this.id = id;
         this.name = name;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getRole() {

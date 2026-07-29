@@ -11,20 +11,29 @@ public class AuthService {
     private final CustomerRepository customerRepository;
     private final WorkerRepository workerRepository;
     private final AdminRepository adminRepository;
+    private final EmployeeRepository employeeRepository;
     private final PasswordService passwordService;
     private final CustomerNotificationService customerNotificationService;
+    private final JwtService jwtService;
+    private final AuthSupport authSupport;
 
     public AuthService(
             CustomerRepository customerRepository,
             WorkerRepository workerRepository,
             AdminRepository adminRepository,
+            EmployeeRepository employeeRepository,
             PasswordService passwordService,
-            CustomerNotificationService customerNotificationService) {
+            CustomerNotificationService customerNotificationService,
+            JwtService jwtService,
+            AuthSupport authSupport) {
         this.customerRepository = customerRepository;
         this.workerRepository = workerRepository;
         this.adminRepository = adminRepository;
+        this.employeeRepository = employeeRepository;
         this.passwordService = passwordService;
         this.customerNotificationService = customerNotificationService;
+        this.jwtService = jwtService;
+        this.authSupport = authSupport;
     }
 
     public AuthResponse loginClient(LoginRequest request) {
@@ -35,9 +44,9 @@ public class AuthService {
             throw unauthorized("Invalid email or password");
         }
 
-        return new AuthResponse(
-                "CLIENT",
+        return issueToken(
                 customer.getId(),
+                "CLIENT",
                 customer.getFirstName() + " " + customer.getLastName());
     }
 
@@ -71,7 +80,7 @@ public class AuthService {
         if (!passwordService.matches(rawPassword, passwordHash)) {
             throw unauthorized("Invalid login or password");
         }
-        return new AuthResponse(role, id, name);
+        return issueToken(id, role, name);
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -89,10 +98,46 @@ public class AuthService {
 
         customerNotificationService.notifyRegistered(saved);
 
-        return new AuthResponse(
-                "CLIENT",
+        return issueToken(
                 saved.getId(),
+                "CLIENT",
                 saved.getFirstName() + " " + saved.getLastName());
+    }
+
+    public void changePassword(ChangePasswordRequest request) {
+        AuthUser user = authSupport.requireUser();
+        String currentPassword = request.getCurrentPassword();
+        String newPassword = request.getNewPassword();
+
+        if (currentPassword.equals(newPassword)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "New password must be different from the current password");
+        }
+
+        if ("CLIENT".equals(user.getRole())) {
+            Customer customer = customerRepository.findById(user.getId())
+                    .orElseThrow(() -> unauthorized("Not authenticated"));
+            if (!passwordService.matches(currentPassword, customer.getPasswordHash())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current password is incorrect");
+            }
+            customer.setPasswordHash(passwordService.hash(newPassword));
+            customerRepository.save(customer);
+            return;
+        }
+
+        Employee employee = employeeRepository.findById(user.getId())
+                .orElseThrow(() -> unauthorized("Not authenticated"));
+        if (!passwordService.matches(currentPassword, employee.getPasswordHash())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current password is incorrect");
+        }
+        employee.setPasswordHash(passwordService.hash(newPassword));
+        employeeRepository.save(employee);
+    }
+
+    private AuthResponse issueToken(Long id, String role, String name) {
+        String token = jwtService.createToken(id, role, name);
+        return new AuthResponse(token, role, id, name);
     }
 
     // Legacy workers without a stored role are treated as mechanics in API responses.

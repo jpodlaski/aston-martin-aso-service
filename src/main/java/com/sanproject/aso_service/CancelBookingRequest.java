@@ -1,29 +1,9 @@
 package com.sanproject.aso_service;
 
-// Provide customerId OR workerId (not both); reason is required for worker cancellations.
+// Optional reason for worker cancellations; actor (customer vs worker) comes from the JWT.
 public class CancelBookingRequest {
 
-    private Long customerId;
-
-    private Long workerId;
-
     private String reason;
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public Long getWorkerId() {
-        return workerId;
-    }
-
-    public void setWorkerId(Long workerId) {
-        this.workerId = workerId;
-    }
 
     public String getReason() {
         return reason;

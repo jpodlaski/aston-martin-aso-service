@@ -7,10 +7,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-// Booking persistence; find*WithDetails queries support admin history and async emails.
+// Booking persistence; *WithDetails queries JOIN FETCH relations needed for JSON (open-in-view=false).
 public interface ServiceBookingRepository extends JpaRepository<ServiceBooking, Long> {
 
-    // JOIN FETCH loads related data in one query for admin history and async emails.
     @Query("""
             SELECT DISTINCT b FROM ServiceBooking b
             LEFT JOIN FETCH b.vehicle v
@@ -31,11 +30,45 @@ public interface ServiceBookingRepository extends JpaRepository<ServiceBooking, 
             """)
     Optional<ServiceBooking> findByIdWithDetails(@Param("id") Long id);
 
-    List<ServiceBooking> findByVehicleId(Long vehicleId);
+    @Query("""
+            SELECT DISTINCT b FROM ServiceBooking b
+            LEFT JOIN FETCH b.vehicle v
+            LEFT JOIN FETCH v.customer
+            LEFT JOIN FETCH b.assignedWorker
+            LEFT JOIN FETCH b.serviceTypes
+            WHERE v.id = :vehicleId
+            """)
+    List<ServiceBooking> findByVehicleIdWithDetails(@Param("vehicleId") Long vehicleId);
 
-    List<ServiceBooking> findByVehicleCustomerId(Long customerId);
+    @Query("""
+            SELECT DISTINCT b FROM ServiceBooking b
+            LEFT JOIN FETCH b.vehicle v
+            LEFT JOIN FETCH v.customer
+            LEFT JOIN FETCH b.assignedWorker
+            LEFT JOIN FETCH b.serviceTypes
+            WHERE v.customer.id = :customerId
+            """)
+    List<ServiceBooking> findByCustomerIdWithDetails(@Param("customerId") Long customerId);
 
-    List<ServiceBooking> findByAssignedWorkerIsNullAndStatus(BookingStatus status);
+    @Query("""
+            SELECT DISTINCT b FROM ServiceBooking b
+            LEFT JOIN FETCH b.vehicle v
+            LEFT JOIN FETCH v.customer
+            LEFT JOIN FETCH b.assignedWorker
+            LEFT JOIN FETCH b.serviceTypes
+            WHERE b.assignedWorker IS NULL AND b.status = :status
+            """)
+    List<ServiceBooking> findAvailableWithDetails(@Param("status") BookingStatus status);
+
+    @Query("""
+            SELECT DISTINCT b FROM ServiceBooking b
+            LEFT JOIN FETCH b.vehicle v
+            LEFT JOIN FETCH v.customer
+            LEFT JOIN FETCH b.assignedWorker
+            LEFT JOIN FETCH b.serviceTypes
+            WHERE b.assignedWorker.id = :workerId
+            """)
+    List<ServiceBooking> findByWorkerIdWithDetails(@Param("workerId") Long workerId);
 
     List<ServiceBooking> findByAssignedWorkerId(Long workerId);
 

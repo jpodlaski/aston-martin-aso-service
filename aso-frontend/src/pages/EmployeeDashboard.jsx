@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ChangePasswordForm from "../components/ChangePasswordForm";
 import { api } from "../services/api";
 import { roleLabel } from "../constants/roles";
 import { clearSession, getSession } from "../services/auth";
@@ -41,7 +42,6 @@ function CustomerAvailability({ booking }) {
 export default function EmployeeDashboard() {
     const navigate = useNavigate();
     const session = getSession();
-    const workerId = session?.id;
 
     const [available, setAvailable] = useState([]);
     const [assigned, setAssigned] = useState([]);
@@ -56,13 +56,13 @@ export default function EmployeeDashboard() {
     const [cancelForms, setCancelForms] = useState({});
 
     const loadBookings = useCallback(async () => {
-        if (!workerId) return;
+        if (!session?.token) return;
         setLoading(true);
         setError("");
         try {
             const [availableRes, assignedRes] = await Promise.all([
                 api.get("/bookings/available"),
-                api.get(`/workers/${workerId}/bookings`),
+                api.get("/workers/me/bookings"),
             ]);
             setAvailable(availableRes.data);
             // Only in-progress bookings appear in the assigned list (completed/cancelled are hidden).
@@ -72,7 +72,7 @@ export default function EmployeeDashboard() {
         } finally {
             setLoading(false);
         }
-    }, [workerId]);
+    }, [session?.token]);
 
     useEffect(() => {
         loadBookings();
@@ -122,7 +122,7 @@ export default function EmployeeDashboard() {
         }
 
         try {
-            await api.post(`/bookings/${bookingId}/reject`, { workerId, reason });
+            await api.post(`/bookings/${bookingId}/reject`, { reason });
             loadBookings();
         } catch (err) {
             setActionError(err.response?.data?.message ?? "Could not reject booking.");
@@ -138,7 +138,7 @@ export default function EmployeeDashboard() {
         }
 
         try {
-            await api.post(`/bookings/${bookingId}/cancel`, { workerId, reason });
+            await api.post(`/bookings/${bookingId}/cancel`, { reason });
             loadBookings();
         } catch (err) {
             setActionError(err.response?.data?.message ?? "Could not cancel booking.");
@@ -152,7 +152,6 @@ export default function EmployeeDashboard() {
         const estimatedCost = costValue ? Number(costValue) : null;
         try {
             await api.post(`/bookings/${bookingId}/claim`, {
-                workerId,
                 estimatedCost: Number.isFinite(estimatedCost) ? estimatedCost : null,
                 serviceTypes: (form.serviceTypes ?? "")
                     .split(",")
@@ -170,7 +169,6 @@ export default function EmployeeDashboard() {
         const form = scheduleForms[bookingId] ?? {};
         try {
             await api.post(`/bookings/${bookingId}/schedule`, {
-                workerId,
                 scheduledDateTime: form.scheduledDateTime ? `${form.scheduledDateTime}:00` : undefined,
             });
             loadBookings();
@@ -184,7 +182,6 @@ export default function EmployeeDashboard() {
         const form = completeForms[bookingId] ?? {};
         try {
             await api.post(`/bookings/${bookingId}/complete`, {
-                workerId,
                 finalCost: Number(form.finalCost),
             });
             loadBookings();
@@ -318,6 +315,8 @@ export default function EmployeeDashboard() {
                     </div>
                 ))}
             </section>
+
+            <ChangePasswordForm />
         </div>
     );
 }

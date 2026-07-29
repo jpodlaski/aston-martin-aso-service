@@ -7,7 +7,7 @@ import "../components/DashboardLayout.css";
 // Wrapper around VehicleConfigurator; returns to client dashboard after success.
 export default function AddVehicle() {
     const navigate = useNavigate();
-    const customerId = getSession()?.id;
+    const session = getSession();
 
     return (
         <div className="dashboard">
@@ -21,11 +21,8 @@ export default function AddVehicle() {
                 </button>
             </div>
 
-            {customerId ? (
-                <VehicleConfigurator
-                    customerId={customerId}
-                    onVehicleAdded={() => navigate("/client")}
-                />
+            {session?.token ? (
+                <VehicleConfigurator onVehicleAdded={() => navigate("/client")} />
             ) : (
                 <p className="form-error">You must be signed in to add a vehicle.</p>
             )}
