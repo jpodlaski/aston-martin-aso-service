@@ -3,7 +3,12 @@ package com.sanproject.aso_service;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
-// Customer-owned vehicle; catalog fields are copied at creation. removedFromAccount is a soft delete.
+/**
+ * Customer-owned Aston Martin vehicle.
+ * Spec fields (engine, body style, …) are copied from the JSON catalog when the car is added
+ * so later catalog edits do not rewrite historical bookings.
+ * removedFromAccount is a soft delete: the row stays for booking history, but the client UI hides it.
+ */
 @Entity
 public class Vehicle {
 

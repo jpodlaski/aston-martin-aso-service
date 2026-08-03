@@ -1,4 +1,6 @@
 (ns aso.email.server
+  "Tiny Ring HTTP service: Spring posts JSON, we return {subject, htmlBody, textBody}.
+   Separating templates into Clojure keeps email markup out of the Java codebase."
     (:require [aso.email.customer-renderer :as customer-renderer]
               [aso.email.renderer :as renderer]
               [cheshire.core :as json]
@@ -20,7 +22,7 @@
           (response/status 400)
           (response/content-type "application/json")))))
 
-;; Two render endpoints called by the Spring Boot EmailRendererClient.
+;; Two render endpoints called by Spring's EmailRendererClient (booking vs customer events).
 (defn app [request]
   (case [(:request-method request) (:uri request)]
         [:post "/render/booking-email"] (render-handler request renderer/render-booking-email)

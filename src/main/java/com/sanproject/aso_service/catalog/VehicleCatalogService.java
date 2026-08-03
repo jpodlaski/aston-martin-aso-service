@@ -13,7 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-// Loads aston-martin-catalog.json at startup; sole source of truth for vehicle configuration validation.
+/**
+ * Loads aston-martin-catalog.json once at startup and indexes configurationId → full specs.
+ * The catalog is the single source of truth: clients pick a config in the UI; the API rejects
+ * unknown configurationIds so users cannot invent arbitrary models via the API.
+ */
 @Service
 public class VehicleCatalogService {
 

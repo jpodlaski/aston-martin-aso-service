@@ -2,7 +2,11 @@ package com.sanproject.aso_service;
 
 import org.springframework.stereotype.Service;
 
-// Entry point from BookingService; passes booking id so async code reloads a fresh entity.
+/**
+ * Thin facade used by BookingService after each state change.
+ * We pass bookingId (not the entity) into the async path so the background thread reloads a
+ * fresh copy from the DB — the original entity may already be detached after the HTTP transaction ends.
+ */
 @Service
 public class BookingNotificationService {
 

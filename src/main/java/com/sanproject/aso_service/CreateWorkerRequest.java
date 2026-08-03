@@ -3,6 +3,7 @@ package com.sanproject.aso_service;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 // New workshop account; caller must be management (enforced via JWT).
 public class CreateWorkerRequest {
@@ -21,6 +22,7 @@ public class CreateWorkerRequest {
     private String login;
 
     @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
     @NotNull(message = "Role is required")

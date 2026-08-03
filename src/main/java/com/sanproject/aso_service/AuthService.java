@@ -1,10 +1,17 @@
 package com.sanproject.aso_service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-// Client and employee login; registration creates a customer and sends a welcome email.
+/**
+ * Authentication use-cases: client login (email), employee login (login name), register,
+ * change password, forgot/reset password, and email verification.
+ * On success we return a JWT — the frontend stores it and sends it as Authorization: Bearer on later calls.
+ * Passwords are never stored in plain text; PasswordService uses BCrypt (one-way hash).
+ */
 @Service
 public class AuthService {
 
@@ -14,8 +21,10 @@ public class AuthService {
     private final EmployeeRepository employeeRepository;
     private final PasswordService passwordService;
     private final CustomerNotificationService customerNotificationService;
+    private final AccountTokenService accountTokenService;
     private final JwtService jwtService;
     private final AuthSupport authSupport;
+    private final String frontendBaseUrl;
 
     public AuthService(
             CustomerRepository customerRepository,
@@ -24,16 +33,20 @@ public class AuthService {
             EmployeeRepository employeeRepository,
             PasswordService passwordService,
             CustomerNotificationService customerNotificationService,
+            AccountTokenService accountTokenService,
             JwtService jwtService,
-            AuthSupport authSupport) {
+            AuthSupport authSupport,
+            @Value("${app.frontend-url:http://localhost:5173}") String frontendBaseUrl) {
         this.customerRepository = customerRepository;
         this.workerRepository = workerRepository;
         this.adminRepository = adminRepository;
         this.employeeRepository = employeeRepository;
         this.passwordService = passwordService;
         this.customerNotificationService = customerNotificationService;
+        this.accountTokenService = accountTokenService;
         this.jwtService = jwtService;
         this.authSupport = authSupport;
+        this.frontendBaseUrl = trimTrailingSlash(frontendBaseUrl);
     }
 
     public AuthResponse loginClient(LoginRequest request) {
@@ -42,6 +55,12 @@ public class AuthService {
 
         if (!passwordService.matches(request.getPassword(), customer.getPasswordHash())) {
             throw unauthorized("Invalid email or password");
+        }
+
+        if (!customer.isEmailVerified()) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Email is not verified. Check your inbox for the verification link.");
         }
 
         return issueToken(
@@ -83,7 +102,7 @@ public class AuthService {
         return issueToken(id, role, name);
     }
 
-    public AuthResponse register(RegisterRequest request) {
+    public MessageResponse register(RegisterRequest request) {
         if (customerRepository.findByEmailIgnoreCase(request.getEmail().trim()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already registered");
         }
@@ -93,15 +112,62 @@ public class AuthService {
         customer.setLastName(request.getLastName().trim());
         customer.setEmail(request.getEmail().trim());
         customer.setPasswordHash(passwordService.hash(request.getPassword()));
+        customer.setEmailVerified(false);
 
         Customer saved = customerRepository.save(customer);
 
-        customerNotificationService.notifyRegistered(saved);
+        // One welcome email that includes the verification link (also kept as a dedicated resend event).
+        String rawToken = accountTokenService.issue(saved, AccountTokenPurpose.EMAIL_VERIFICATION);
+        String actionUrl = frontendBaseUrl + "/verify-email?token=" + rawToken;
+        customerNotificationService.notifyRegistered(saved, actionUrl);
 
-        return issueToken(
-                saved.getId(),
-                "CLIENT",
-                saved.getFirstName() + " " + saved.getLastName());
+        return new MessageResponse(
+                "Account created. Check your email to verify your address before signing in.");
+    }
+
+    /** Always returns the same message so callers cannot probe which emails exist. */
+    public MessageResponse requestPasswordReset(ForgotPasswordRequest request) {
+        String genericMessage = "If that email is registered, you will receive a password reset link shortly.";
+
+        customerRepository.findByEmailIgnoreCase(request.getEmail().trim()).ifPresent(customer -> {
+            String rawToken = accountTokenService.issue(customer, AccountTokenPurpose.PASSWORD_RESET);
+            String actionUrl = frontendBaseUrl + "/reset-password?token=" + rawToken;
+            customerNotificationService.notifyPasswordReset(customer, actionUrl);
+        });
+
+        return new MessageResponse(genericMessage);
+    }
+
+    @Transactional
+    public MessageResponse resetPassword(ResetPasswordRequest request) {
+        Customer customer = accountTokenService.consume(request.getToken().trim(), AccountTokenPurpose.PASSWORD_RESET);
+        customer.setPasswordHash(passwordService.hash(request.getNewPassword()));
+        customerRepository.save(customer);
+        customerNotificationService.notifyPasswordChanged(customer);
+        return new MessageResponse("Password updated. You can sign in with your new password.");
+    }
+
+    @Transactional
+    public MessageResponse verifyEmail(VerifyEmailRequest request) {
+        Customer customer = accountTokenService.consume(
+                request.getToken().trim(),
+                AccountTokenPurpose.EMAIL_VERIFICATION);
+        customer.setEmailVerified(true);
+        customerRepository.save(customer);
+        return new MessageResponse("Email verified. You can sign in now.");
+    }
+
+    /** Always returns the same message so callers cannot probe which emails exist. */
+    public MessageResponse resendVerification(ResendVerificationRequest request) {
+        String genericMessage = "If that email is registered and unverified, you will receive a verification link shortly.";
+
+        customerRepository.findByEmailIgnoreCase(request.getEmail().trim()).ifPresent(customer -> {
+            if (!customer.isEmailVerified()) {
+                sendVerificationEmail(customer);
+            }
+        });
+
+        return new MessageResponse(genericMessage);
     }
 
     public void changePassword(ChangePasswordRequest request) {
@@ -123,6 +189,7 @@ public class AuthService {
             }
             customer.setPasswordHash(passwordService.hash(newPassword));
             customerRepository.save(customer);
+            customerNotificationService.notifyPasswordChanged(customer);
             return;
         }
 
@@ -133,6 +200,15 @@ public class AuthService {
         }
         employee.setPasswordHash(passwordService.hash(newPassword));
         employeeRepository.save(employee);
+        customerNotificationService.notifyPasswordChanged(
+                employee.getFirstName() + " " + employee.getLastName(),
+                employee.getEmail());
+    }
+
+    private void sendVerificationEmail(Customer customer) {
+        String rawToken = accountTokenService.issue(customer, AccountTokenPurpose.EMAIL_VERIFICATION);
+        String actionUrl = frontendBaseUrl + "/verify-email?token=" + rawToken;
+        customerNotificationService.notifyEmailVerification(customer, actionUrl);
     }
 
     private AuthResponse issueToken(Long id, String role, String name) {
@@ -150,5 +226,12 @@ public class AuthService {
 
     private ResponseStatusException unauthorized(String message) {
         return new ResponseStatusException(HttpStatus.UNAUTHORIZED, message);
+    }
+
+    private static String trimTrailingSlash(String url) {
+        if (url == null || url.isBlank()) {
+            return "http://localhost:5173";
+        }
+        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 }

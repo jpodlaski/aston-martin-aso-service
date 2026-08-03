@@ -1,7 +1,10 @@
 import { Navigate } from "react-router-dom";
 import { getDashboardPathForRole, getSession } from "../services/auth";
 
-// Redirects unauthenticated users to the correct login page; enforces role on protected routes.
+/**
+ * Client-side route guard (UI only — the API still enforces auth/roles on every call).
+ * No session → login page; wrong role → redirect to that role's own dashboard.
+ */
 export default function PrivateRoute({ children, roles }) {
     const session = getSession();
 

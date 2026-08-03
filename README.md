@@ -19,7 +19,7 @@ Web application for an **Authorized Service Organization (ASO)**. Customers regi
 
 ## Features
 
-- **Clients** — register/login, change password, configure vehicles from catalog, request service, cancel own bookings
+- **Clients** — register (email verification required), login, forgot/reset password, change password, configure vehicles from catalog, request service, cancel own bookings
 - **Workshop staff** — claim available bookings, schedule appointments, complete work (invoice), reject or cancel
 - **Management** (`ADMIN`, `CEO`, `COO`) — create/update/delete workers, view all bookings
 - **Auth** — BCrypt passwords, Bearer JWT; actor identity always from the token (not from request body IDs)
@@ -75,12 +75,16 @@ docker compose up --build
 ## Demo walkthrough
 
 1. Open http://localhost:5173/register — create a client account.
-2. Add a vehicle (`/client/add-vehicle`) using the Aston Martin catalog.
-3. Request service (`/client/request-service`) with drop-off time and/or availability notes.
-4. Sign out → http://localhost:5173/employee-login — log in as `admin` / `admin`.
-5. On the management dashboard, create a workshop worker (e.g. mechanic).
-6. Sign out → log in as that worker → claim the booking, schedule a time, complete with a final cost.
-7. Open http://localhost:8025 — verify emails (including invoice PDF on completion).
+2. Open http://localhost:8025 — open the verification email and click the link (or copy the token URL).
+3. Sign in at http://localhost:5173/ with the verified account.
+4. Add a vehicle (`/client/add-vehicle`) using the Aston Martin catalog.
+5. Request service (`/client/request-service`) with drop-off time and/or availability notes.
+6. Sign out → http://localhost:5173/employee-login — log in as `admin` / `admin`.
+7. On the management dashboard, create a workshop worker (e.g. mechanic).
+8. Sign out → log in as that worker → claim the booking, schedule a time, complete with a final cost.
+9. Open http://localhost:8025 — verify emails (including invoice PDF on completion).
+
+Forgot password: `/forgot-password` → check Mailhog → `/reset-password?token=…`.
 
 Any signed-in user can change their password from their dashboard.
 
@@ -117,12 +121,18 @@ Worker schedule sets the confirmed date/time and sends an appointment email.
 
 | Endpoint | Who | Notes |
 |----------|-----|--------|
-| `POST /auth/register` | Public | Creates client, returns JWT |
-| `POST /auth/login` | Public | Client login (email + password) |
+| `POST /auth/register` | Public | Creates client (unverified), sends welcome + verify emails |
+| `POST /auth/login` | Public | Client login (email + password); requires verified email |
 | `POST /auth/employee-login` | Public | Worker/admin login (`login` + password) |
+| `POST /auth/forgot-password` | Public | Sends reset link if email exists (generic response) |
+| `POST /auth/reset-password` | Public | Sets new password with one-time token |
+| `POST /auth/verify-email` | Public | Marks client email verified with one-time token |
+| `POST /auth/resend-verification` | Public | Resends verify link if still unverified (generic response) |
 | `POST /auth/change-password` | Authenticated | Current + new password (min 8 chars) |
 
-Public routes: the three auth endpoints above, `GET /hello`, `GET /vehicles/catalog`. Everything else requires `Authorization: Bearer <token>`.
+Public routes: the auth endpoints above, `GET /hello`, `GET /vehicles/catalog`. Everything else requires `Authorization: Bearer <token>`.
+
+Frontend helpers: `/forgot-password`, `/reset-password?token=…`, `/verify-email?token=…`, `/resend-verification`. Check Mailhog at http://localhost:8025 for links in local demos.
 
 JWT payload drives authorization via `AuthSupport`. Prefer self routes: `/vehicles/me`, `/customers/me/bookings`, `/workers/me/bookings`.
 
@@ -200,6 +210,7 @@ curl -s -X POST http://localhost:8080/bookings/1/complete \
 | `booking_rejected` | Workshop declines unclaimed booking |
 | `booking_cancelled` | Customer or worker cancels |
 | `booking_completed` | Finished — invoice PDF attached |
+| `password_changed` | After change-password or successful reset |
 
 Flow: persist → enqueue → `@Async` delivery → Clojure `POST /render/...` → SMTP.
 

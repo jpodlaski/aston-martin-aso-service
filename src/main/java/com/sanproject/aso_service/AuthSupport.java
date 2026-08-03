@@ -6,7 +6,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-// Reads the JWT principal from SecurityContext; used instead of client-supplied actor ids.
+/**
+ * Central place for "who is calling this endpoint?".
+ * Controllers never trust actor ids from the JSON body (that would enable IDOR attacks —
+ * e.g. claiming another user's booking by sending their customerId). Instead they ask
+ * AuthSupport, which reads the AuthUser put into SecurityContext by JwtAuthenticationFilter.
+ */
 @Component
 public class AuthSupport {
 

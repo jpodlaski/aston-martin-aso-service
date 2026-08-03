@@ -4,7 +4,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-// BCrypt hashing; matches returns false when the stored hash is null.
+/**
+ * BCrypt password hashing. BCrypt is designed to be slow on purpose (work factor),
+ * which makes brute-force attacks expensive. We store only the hash, never the raw password.
+ */
 @Service
 public class PasswordService {
 

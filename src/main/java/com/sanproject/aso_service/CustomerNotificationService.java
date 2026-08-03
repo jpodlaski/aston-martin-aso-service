@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-// Async emails for registration and vehicle add/remove; payload is built before the async hop.
+/**
+ * Async emails for registration, verification, password reset, and vehicle add/remove.
+ * Payload is built on the request thread; actual SMTP send happens asynchronously.
+ */
 @Service
 public class CustomerNotificationService {
 
@@ -21,16 +24,64 @@ public class CustomerNotificationService {
 
     @Async
     public void notifyRegistered(Customer customer) {
+        notifyRegistered(customer, null);
+    }
+
+    @Async
+    public void notifyRegistered(Customer customer, String actionUrl) {
         if (customer.getEmail() == null || customer.getEmail().isBlank()) {
             log.warn("Skipping registration email for customer {}: no email", customer.getId());
             return;
         }
 
-        CustomerEmailPayload payload = new CustomerEmailPayload();
-        payload.setEvent("customer_registered");
-        payload.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
-        payload.setCustomerEmail(customer.getEmail());
+        CustomerEmailPayload payload = basePayload("customer_registered", customer);
+        payload.setActionUrl(actionUrl);
+        send(payload);
+    }
 
+    @Async
+    public void notifyEmailVerification(Customer customer, String actionUrl) {
+        if (customer.getEmail() == null || customer.getEmail().isBlank()) {
+            log.warn("Skipping verification email for customer {}: no email", customer.getId());
+            return;
+        }
+
+        CustomerEmailPayload payload = basePayload("email_verification", customer);
+        payload.setActionUrl(actionUrl);
+        send(payload);
+    }
+
+    @Async
+    public void notifyPasswordReset(Customer customer, String actionUrl) {
+        if (customer.getEmail() == null || customer.getEmail().isBlank()) {
+            log.warn("Skipping password-reset email for customer {}: no email", customer.getId());
+            return;
+        }
+
+        CustomerEmailPayload payload = basePayload("password_reset", customer);
+        payload.setActionUrl(actionUrl);
+        send(payload);
+    }
+
+    @Async
+    public void notifyPasswordChanged(Customer customer) {
+        if (customer.getEmail() == null || customer.getEmail().isBlank()) {
+            log.warn("Skipping password-changed email for customer {}: no email", customer.getId());
+            return;
+        }
+        send(basePayload("password_changed", customer));
+    }
+
+    @Async
+    public void notifyPasswordChanged(String name, String email) {
+        if (email == null || email.isBlank()) {
+            log.warn("Skipping password-changed email: no email");
+            return;
+        }
+        CustomerEmailPayload payload = new CustomerEmailPayload();
+        payload.setEvent("password_changed");
+        payload.setCustomerName(name != null && !name.isBlank() ? name : "User");
+        payload.setCustomerEmail(email);
         send(payload);
     }
 
@@ -57,11 +108,16 @@ public class CustomerNotificationService {
         send(payload);
     }
 
-    private CustomerEmailPayload buildVehiclePayload(String event, Vehicle vehicle, Customer customer) {
+    private CustomerEmailPayload basePayload(String event, Customer customer) {
         CustomerEmailPayload payload = new CustomerEmailPayload();
         payload.setEvent(event);
         payload.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
         payload.setCustomerEmail(customer.getEmail());
+        return payload;
+    }
+
+    private CustomerEmailPayload buildVehiclePayload(String event, Vehicle vehicle, Customer customer) {
+        CustomerEmailPayload payload = basePayload(event, customer);
         // Prefer model line (e.g. DBX) over full catalog name in vehicle emails.
         payload.setCarModel(vehicle.getModelLine() != null ? vehicle.getModelLine() : vehicle.getModel());
         payload.setVin(vehicle.getVin());

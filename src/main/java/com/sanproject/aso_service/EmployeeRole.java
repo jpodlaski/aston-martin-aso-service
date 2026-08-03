@@ -1,6 +1,10 @@
 package com.sanproject.aso_service;
 
-// Role names match the strings returned by /auth/employee-login and stored in the frontend session.
+/**
+ * Staff roles used for authorization. Names are stored as strings in JWT claims and localStorage,
+ * so they must stay in sync with the frontend constants/roles.js.
+ * Management (ADMIN/CEO/COO) ≠ workshop staff (mechanics / apprentice / consultant).
+ */
 public enum EmployeeRole {
     ADMIN,
     CEO,

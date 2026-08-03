@@ -15,6 +15,8 @@ public class CustomerEmailPayload {
     private String power;
     private String transmission;
     private String drivetrain;
+    /** Absolute frontend URL for reset / verify links (optional per event). */
+    private String actionUrl;
 
     public String getEvent() {
         return event;
@@ -110,5 +112,13 @@ public class CustomerEmailPayload {
 
     public void setDrivetrain(String drivetrain) {
         this.drivetrain = drivetrain;
+    }
+
+    public String getActionUrl() {
+        return actionUrl;
+    }
+
+    public void setActionUrl(String actionUrl) {
+        this.actionUrl = actionUrl;
     }
 }

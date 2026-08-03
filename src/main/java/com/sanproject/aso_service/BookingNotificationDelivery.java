@@ -9,7 +9,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-// Loads booking data inside a transaction, renders email, and sends via SMTP.
+/**
+ * Pipeline step that actually builds and sends the email:
+ * 1) reload booking + associations inside a read-only transaction
+ * 2) POST JSON payload to the Clojure email-renderer microservice
+ * 3) send HTML/text via SMTP (Mailhog locally); attach PDF invoice on completion
+ */
 @Service
 public class BookingNotificationDelivery {
 

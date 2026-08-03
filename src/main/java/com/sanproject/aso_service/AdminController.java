@@ -89,9 +89,9 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<Admin> createAdmin(@Valid @RequestBody Admin admin) {
+    public ResponseEntity<Admin> createAdmin(@Valid @RequestBody CreateAdminRequest request) {
         authSupport.requireCanManageWorkers();
-        Admin createdAdmin = adminService.createAdmin(admin);
+        Admin createdAdmin = adminService.createAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAdmin);
     }
 }

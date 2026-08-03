@@ -8,7 +8,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-// Booking state machine: SCHEDULED → IN_PROGRESS → COMPLETED, or CANCELLED via reject/cancel.
+/**
+ * Core domain logic: the booking state machine.
+ *
+ *   SCHEDULED ──claim──► IN_PROGRESS ──complete──► COMPLETED
+ *       │                     │
+ *       │ reject              │ cancel (customer or assigned worker)
+ *       └─────────────────────┴──► CANCELLED
+ *
+ * "SCHEDULED" here means a *service request* waiting in the workshop queue, not a confirmed
+ * appointment. Confirming the date/time is a separate scheduleBooking step after claim.
+ * Every transition that succeeds triggers an async customer email via BookingNotificationService.
+ */
 @Service
 public class BookingService {
 
@@ -41,6 +52,7 @@ public class BookingService {
         return bookingRepository.findByWorkerIdWithDetails(workerId);
     }
 
+    /** Client creates a request; vehicle ownership is checked so you cannot book someone else's car. */
     public ServiceBooking createBooking(CreateBookingRequest request, Long customerId) {
         validateAvailability(request);
 
@@ -70,6 +82,10 @@ public class BookingService {
         return reloadForResponse(saved.getId());
     }
 
+    /**
+     * Workshop worker takes an unclaimed SCHEDULED booking → IN_PROGRESS.
+     * Worker identity comes from the JWT (passed in by the controller), not from the request body.
+     */
     public ServiceBooking claimBooking(Long id, ClaimBookingRequest request, Worker worker) {
         ServiceBooking booking = bookingRepository.findById(id).orElse(null);
         if (booking == null) {
@@ -90,6 +106,7 @@ public class BookingService {
         return reloadForResponse(saved.getId());
     }
 
+    /** Assigned worker sets the confirmed appointment datetime and emails the customer. */
     public ServiceBooking scheduleBooking(Long id, ScheduleBookingRequest request, Worker worker) {
         ServiceBooking booking = bookingRepository.findById(id).orElse(null);
         if (booking == null) {
@@ -110,6 +127,7 @@ public class BookingService {
         return reloadForResponse(saved.getId());
     }
 
+    /** Decline an unclaimed request (still in the queue). Different from cancel after claim. */
     public ServiceBooking rejectBooking(Long id, RejectBookingRequest request, Worker worker) {
         ServiceBooking booking = bookingRepository.findById(id).orElse(null);
         if (booking == null) {
@@ -131,6 +149,11 @@ public class BookingService {
         return reloadForResponse(saved.getId());
     }
 
+    /**
+     * Cancel rules differ by role:
+     * - CLIENT may cancel their own booking (SCHEDULED or IN_PROGRESS)
+     * - Assigned workshop worker may cancel with a required reason
+     */
     public ServiceBooking cancelBooking(Long id, CancelBookingRequest request, AuthUser actor) {
         ServiceBooking booking = bookingRepository.findByIdWithDetails(id).orElse(null);
         if (booking == null) {
@@ -177,6 +200,7 @@ public class BookingService {
         return reloadForResponse(saved.getId());
     }
 
+    /** Finish work: set final cost → COMPLETED; completion email attaches a generated PDF invoice. */
     public ServiceBooking completeBooking(Long id, CompleteBookingRequest request, Worker worker) {
         ServiceBooking booking = bookingRepository.findById(id).orElse(null);
         if (booking == null) {
@@ -247,13 +271,19 @@ public class BookingService {
         return bookingRepository.findByCustomerIdWithDetails(customerId);
     }
 
-    // Reload with JOIN FETCH so JSON serialization works with open-in-view=false.
+    /**
+     * open-in-view=false means Hibernate is closed after the service method returns.
+     * Reloading with JOIN FETCH ensures vehicle/worker/serviceTypes are loaded before JSON serialization.
+     */
     private ServiceBooking reloadForResponse(Long id) {
         return bookingRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
     }
 
-    // CLIENT: own bookings. Workshop: available queue or assigned. Management: all.
+    /**
+     * Authorization matrix for GET /bookings/{id}:
+     * CLIENT → own bookings only; workshop → assigned or available queue; management → all.
+     */
     public void assertCanView(AuthUser user, ServiceBooking booking) {
         if ("CLIENT".equals(user.getRole())) {
             if (!ownsBooking(user.getId(), booking)) {

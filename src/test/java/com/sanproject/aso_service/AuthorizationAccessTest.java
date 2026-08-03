@@ -20,6 +20,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Integration tests for authorization / IDOR-style access control.
+ * Verifies that a JWT for role A cannot call endpoints meant for role B
+ * (e.g. client cannot manage workers; worker cannot see another customer's bookings).
+ * Notifications are @MockitoBean'd so tests focus on HTTP + security, not SMTP.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -71,6 +77,7 @@ class AuthorizationAccessTest {
         customerA.setLastName("Client");
         customerA.setEmail("alice@example.com");
         customerA.setPasswordHash(passwordService.hash("secret"));
+        customerA.setEmailVerified(true);
         customerA = customerRepository.save(customerA);
 
         customerB = new Customer();
@@ -78,6 +85,7 @@ class AuthorizationAccessTest {
         customerB.setLastName("Client");
         customerB.setEmail("bob@example.com");
         customerB.setPasswordHash(passwordService.hash("secret"));
+        customerB.setEmailVerified(true);
         customerB = customerRepository.save(customerB);
 
         Vehicle vehicleA = new Vehicle();

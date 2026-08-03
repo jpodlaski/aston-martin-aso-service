@@ -25,6 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.jayway.jsonpath.JsonPath;
 
+/**
+ * End-to-end HTTP test of the booking state machine:
+ * create → claim → schedule → complete (plus reject/cancel paths in other methods).
+ * Uses real Spring context + MockMvc against the test Postgres DB; emails mocked.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -69,6 +74,7 @@ class BookingLifecycleTest {
         customer.setLastName("Client");
         customer.setEmail("casey@example.com");
         customer.setPasswordHash(passwordService.hash("secret"));
+        customer.setEmailVerified(true);
         customer = customerRepository.save(customer);
 
         vehicle = new Vehicle();

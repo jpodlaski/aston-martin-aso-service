@@ -2,6 +2,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
+import ResendVerification from "./pages/ResendVerification";
 import EmployeeLogin from "./pages/EmployeeLogin";
 import AddVehicle from "./pages/AddVehicle";
 import ClientDashboard from "./pages/ClientDashboard";
@@ -11,13 +15,23 @@ import AdminDashboard from "./pages/AdminDashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import { MANAGEMENT_ROLES, WORKSHOP_ROLES } from "./constants/roles";
 
-// Client, workshop, and management dashboards are behind PrivateRoute role checks.
+/**
+ * Front-door routing for the three user worlds:
+ * - CLIENT → /client*
+ * - workshop staff → /employee
+ * - management → /admin
+ * Public login/register routes stay open; everything else wraps PrivateRoute (session + role).
+ */
 export default function App() {
   return (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/resend-verification" element={<ResendVerification />} />
           <Route path="/employee-login" element={<EmployeeLogin />} />
           <Route
               path="/client"

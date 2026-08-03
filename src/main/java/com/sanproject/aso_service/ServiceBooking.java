@@ -18,7 +18,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-// Service request for one vehicle; status drives the workshop workflow and email events.
+/**
+ * JPA entity for one service request / workshop job.
+ * Status is the state-machine field; customerName/carModel are denormalized snapshots so history
+ * still reads well if the linked vehicle is later soft-removed from the account.
+ */
 @Entity
 public class ServiceBooking {
 

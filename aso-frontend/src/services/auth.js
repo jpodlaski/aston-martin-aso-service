@@ -1,6 +1,10 @@
 import { MANAGEMENT_ROLES, WORKSHOP_ROLES } from "../constants/roles";
 
-// Client-side session only; no expiry — logout clears this key. Token is the API Bearer JWT.
+/**
+ * Browser session helpers. We store { token, role, id, name } in localStorage after login.
+ * Logout only clears this key — JWTs are not revoked server-side (stateless auth trade-off).
+ * UI routing uses role; real authorization always happens again on the API.
+ */
 const SESSION_KEY = "aso_session";
 
 export function saveSession(session) {

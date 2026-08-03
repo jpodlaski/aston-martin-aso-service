@@ -11,7 +11,12 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-// Issues and parses HS256 JWTs used as Bearer tokens after login/register.
+/**
+ * Creates and verifies JWTs (JSON Web Tokens) signed with HMAC-SHA256.
+ * A JWT is a compact, signed string: header.payload.signature. Anyone can read the
+ * payload, but only someone with the secret can forge a valid signature — that is how
+ * the API trusts "this request is from user id X with role Y" without a server-side session store.
+ */
 @Service
 public class JwtService {
 
@@ -21,6 +26,7 @@ public class JwtService {
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration-ms}") long expirationMs) {
+        // Secret must be long enough for HS256; override APP_JWT_SECRET in real deployments.
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
     }
@@ -29,6 +35,7 @@ public class JwtService {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
+        // subject = user id; custom claims carry role/name used by AuthSupport and the UI.
         return Jwts.builder()
                 .subject(String.valueOf(id))
                 .claim("role", role)
@@ -41,6 +48,7 @@ public class JwtService {
 
     public AuthUser parseToken(String token) {
         try {
+            // verifyWith checks the signature and rejects expired/tampered tokens.
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()

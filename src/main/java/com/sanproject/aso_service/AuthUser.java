@@ -7,7 +7,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-// Principal stored in SecurityContext after a valid JWT is accepted.
+/**
+ * Lightweight representation of the signed-in user (id + role + display name).
+ * Implements Spring's UserDetails so it can sit in SecurityContext as the Authentication principal.
+ * Password is null here — authentication already happened when the JWT was issued.
+ */
 public class AuthUser implements UserDetails {
 
     private final Long id;

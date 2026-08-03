@@ -7,7 +7,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-// Booking persistence; *WithDetails queries JOIN FETCH relations needed for JSON (open-in-view=false).
+/**
+ * Booking persistence. Methods named *WithDetails use JPQL JOIN FETCH.
+ * Why: spring.jpa.open-in-view=false closes the Hibernate session before JSON serialization,
+ * so lazy associations (vehicle, customer, worker, serviceTypes) would throw LazyInitializationException
+ * unless we eagerly fetch them in the query.
+ */
 public interface ServiceBookingRepository extends JpaRepository<ServiceBooking, Long> {
 
     @Query("""

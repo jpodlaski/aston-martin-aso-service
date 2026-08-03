@@ -8,7 +8,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-// Adds vehicles from catalog configuration; soft-removes with open-booking guard.
+/**
+ * Adds vehicles from the catalog; soft-removes with an open-booking guard.
+ * Soft delete keeps the row so past bookings still resolve vehicle/VIN history.
+ */
 @Service
 public class VehicleService {
 

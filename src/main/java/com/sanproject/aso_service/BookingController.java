@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// REST surface for the booking lifecycle; actor identity always comes from the JWT.
+/**
+ * REST API for the booking lifecycle.
+ * Pattern used everywhere: AuthSupport resolves the actor from the JWT → BookingService applies rules.
+ * Prefer "/me" style routes (e.g. /customers/me/bookings) so the client never picks another user's id.
+ */
 @RestController
 public class BookingController {
 

@@ -10,7 +10,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-// Sends multipart HTML emails via SMTP; optional PDF attachment for completion invoices.
+/**
+ * SMTP sender (Spring Mail). Locally points at Mailhog so emails appear in http://localhost:8025
+ * instead of a real inbox — useful for demos and debugging templates without sending spam.
+ */
 @Service
 public class MailService {
 

@@ -19,7 +19,11 @@ function scrollToRef(ref) {
     });
 }
 
-// Multi-step Aston Martin picker; posts configurationId + VIN to the API.
+/**
+ * Guided multi-step picker driven by GET /vehicles/catalog.
+ * Cascading choices (model line → body → engine → transmission → year → VIN) narrow to one
+ * configurationId; that id is what the API validates against VehicleCatalogService.
+ */
 export default function VehicleConfigurator({ onVehicleAdded }) {
     const [catalog, setCatalog] = useState(null);
     const [loading, setLoading] = useState(true);

@@ -3,7 +3,10 @@ package com.sanproject.aso_service;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-// Seeds demo admin/admin credentials on first startup only (dev convenience).
+/**
+ * Seeds demo admin/admin on first empty DB only — convenience for local docker-compose demos.
+ * Would be gated behind a "dev" profile (or removed) before a real production deploy.
+ */
 @Component
 public class DemoAuthDataLoader implements CommandLineRunner {
 

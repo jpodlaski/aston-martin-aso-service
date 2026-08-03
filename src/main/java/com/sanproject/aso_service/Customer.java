@@ -1,6 +1,7 @@
 package com.sanproject.aso_service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,7 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-// Client account; password hash is never exposed in JSON responses.
+/**
+ * Client account. @JsonIgnore on getPasswordHash prevents leaking BCrypt hashes in JSON responses.
+ */
 @Entity
 public class Customer {
 
@@ -24,9 +27,14 @@ public class Customer {
 
     @Email(message = "Email must be valid")
     @NotBlank(message = "Email is required")
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String passwordHash;
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
 
     public Customer() {
     }
@@ -77,5 +85,13 @@ public class Customer {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 }

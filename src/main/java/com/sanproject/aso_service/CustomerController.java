@@ -58,9 +58,9 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
         authSupport.requireCanManageWorkers();
-        Customer createdCustomer = customerService.createCustomer(customer);
+        Customer createdCustomer = customerService.createCustomer(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCustomer);
     }
 }

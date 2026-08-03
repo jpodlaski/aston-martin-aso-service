@@ -146,9 +146,34 @@
   (testing "customer_registered event"
     (let [result (render-customer-email
                   {:event "customer_registered"
-                   :customerName "Jane Doe"})]
+                   :customerName "Jane Doe"
+                   :actionUrl "http://localhost:5173/verify-email?token=abc"})]
       (is (str/includes? (:subject result) "welcome"))
-      (is (str/includes? (:textBody result) "account has been registered"))))
+      (is (str/includes? (:textBody result) "account has been registered"))
+      (is (str/includes? (:textBody result) "http://localhost:5173/verify-email?token=abc"))
+      (is (str/includes? (:htmlBody result) "Verify email"))))
+  (testing "email_verification event"
+    (let [result (render-customer-email
+                  {:event "email_verification"
+                   :customerName "Jane Doe"
+                   :actionUrl "http://localhost:5173/verify-email?token=abc"})]
+      (is (str/includes? (:subject result) "verify"))
+      (is (str/includes? (:textBody result) "http://localhost:5173/verify-email?token=abc"))
+      (is (str/includes? (:htmlBody result) "Verify email"))))
+  (testing "password_reset event"
+    (let [result (render-customer-email
+                  {:event "password_reset"
+                   :customerName "Jane Doe"
+                   :actionUrl "http://localhost:5173/reset-password?token=xyz"})]
+      (is (str/includes? (:subject result) "reset"))
+      (is (str/includes? (:textBody result) "http://localhost:5173/reset-password?token=xyz"))
+      (is (str/includes? (:htmlBody result) "Reset password"))))
+  (testing "password_changed event"
+    (let [result (render-customer-email
+                  {:event "password_changed"
+                   :customerName "Jane Doe"})]
+      (is (str/includes? (:subject result) "password changed"))
+      (is (str/includes? (:textBody result) "password was changed successfully"))))
   (testing "vehicle_added event"
     (let [result (render-customer-email
                   {:event "vehicle_added"

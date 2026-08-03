@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
-import { saveSession } from "../services/auth";
 import "../components/DashboardLayout.css";
 
-// Client self-registration; no VIN required — vehicles are added separately.
+// Client self-registration; account must be email-verified before login.
 export default function Register() {
     const navigate = useNavigate();
     const [firstName, setFirstName] = useState("");
@@ -12,12 +11,14 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
     const register = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
+        setMessage("");
 
         try {
             const res = await api.post("/auth/register", {
@@ -26,8 +27,8 @@ export default function Register() {
                 email,
                 password,
             });
-            saveSession(res.data);
-            navigate("/client");
+            setMessage(res.data?.message ?? "Account created. Check your email to verify.");
+            setTimeout(() => navigate("/"), 2500);
         } catch (err) {
             setError(err.response?.data?.message ?? "Registration failed.");
         } finally {
@@ -61,19 +62,22 @@ export default function Register() {
                 />
                 <input
                     type="password"
-                    placeholder="Password"
+                    placeholder="Password (min. 8 characters)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    minLength={8}
                 />
                 <button type="submit" disabled={loading}>
                     {loading ? "Creating account…" : "Register"}
                 </button>
+                {message && <p className="form-success">{message}</p>}
                 {error && <p className="form-error">{error}</p>}
             </form>
 
             <div className="auth-links">
                 <Link to="/">Already have an account? Sign in</Link>
+                <Link to="/resend-verification">Resend verification email</Link>
             </div>
         </div>
     );

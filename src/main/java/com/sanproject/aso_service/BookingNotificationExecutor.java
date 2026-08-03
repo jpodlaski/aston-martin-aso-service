@@ -3,7 +3,11 @@ package com.sanproject.aso_service;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-// Runs email delivery off the HTTP thread; must stay separate from @Transactional delivery.
+/**
+ * @Async runs send() on a thread pool so the HTTP response is not blocked waiting for SMTP.
+ * Kept as its own bean: Spring AOP proxies only work across beans — @Async on a private method
+ * of the same class would be ignored (self-invocation).
+ */
 @Component
 public class BookingNotificationExecutor {
 
@@ -15,7 +19,7 @@ public class BookingNotificationExecutor {
 
     @Async
     public void send(Long bookingId, String event, BookingStatus previousStatus) {
-        // Proxy call into another bean so @Transactional on deliver() is applied.
+        // Second hop into another bean so @Transactional on deliver() is also applied by the proxy.
         delivery.deliver(bookingId, event, previousStatus);
     }
 }

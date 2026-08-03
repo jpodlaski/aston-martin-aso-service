@@ -10,7 +10,10 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.Map;
 
-// Maps validation errors to field→message maps and business errors to {"message": "..."}.
+/**
+ * Maps Bean Validation failures and ResponseStatusException to consistent JSON error bodies.
+ * Controllers stay clean: throw ResponseStatusException / rely on @Valid, this advice formats the HTTP response.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

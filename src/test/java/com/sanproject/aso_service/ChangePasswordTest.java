@@ -15,6 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Verifies authenticated password change for client, worker, and admin.
+ * Requires current password; rejects reuse of the same password.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -56,6 +60,7 @@ class ChangePasswordTest {
         customer.setLastName("Client");
         customer.setEmail("pat@example.com");
         customer.setPasswordHash(passwordService.hash("oldpass12"));
+        customer.setEmailVerified(true);
         customer = customerRepository.save(customer);
 
         worker = new Worker();

@@ -1,6 +1,7 @@
 package com.sanproject.aso_service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +14,11 @@ import jakarta.persistence.InheritanceType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-// Shared login credentials and role for Admin and Worker; each subtype has its own table.
+/**
+ * Shared base for Admin and Worker using JOINED inheritance:
+ * common columns live in `employee`, subtype-specific rows in `admin` / `worker`.
+ * This models "all staff share login fields" while keeping polymorphic queries via EmployeeRepository.
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "employee_type")
@@ -34,8 +39,10 @@ public abstract class Employee {
     private String email;
 
     @NotBlank(message = "Login is required")
+    @Column(nullable = false, unique = true)
     private String login;
 
+    @Column(nullable = false)
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)

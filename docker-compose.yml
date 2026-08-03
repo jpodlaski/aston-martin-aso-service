@@ -1,3 +1,5 @@
+# Local full-stack demo: Postgres + Mailhog (fake SMTP UI) + Clojure email renderer + Spring API + Vite UI.
+# Start with: ./mvnw package -DskipTests && docker compose up --build
 services:
   db:
     image: postgres:16
@@ -47,6 +49,7 @@ services:
       MAIL_PORT: 1025
       MAIL_FROM: noreply@aston-martin-aso.local
       EMAIL_RENDERER_URL: http://email-renderer:3000
+      APP_FRONTEND_URL: http://localhost:5173
       APP_JWT_SECRET: aso-service-dev-jwt-secret-change-me-32chars-min
       APP_JWT_EXPIRATION_MS: "86400000"
 

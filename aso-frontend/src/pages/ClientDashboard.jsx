@@ -19,7 +19,8 @@ function isOpenBooking(status) {
     return status === "SCHEDULED" || status === "IN_PROGRESS";
 }
 
-// Client home: vehicles, bookings, links to add vehicle and request service.
+// Client home: list own vehicles & bookings; navigate to add-vehicle / request-service.
+// Vehicle removal is blocked while SCHEDULED/IN_PROGRESS bookings exist (server enforces too).
 export default function ClientDashboard() {
     const navigate = useNavigate();
     const session = getSession();

@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-// Generates a simple PDF invoice attached to the booking_completed email.
+/**
+ * Builds a simple PDF invoice with Apache PDFBox for the booking_completed email attachment.
+ * Not a full accounting system — just enough for the demo "invoice on completion" story.
+ */
 @Service
 public class InvoicePdfService {
 

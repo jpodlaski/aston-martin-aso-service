@@ -14,7 +14,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-// Reads Authorization: Bearer <jwt>, validates it, and populates SecurityContext.
+/**
+ * Servlet filter that runs on every HTTP request before controllers.
+ * If the Authorization header carries a valid Bearer JWT, it places an AuthUser into
+ * Spring Security's SecurityContext so controllers can call AuthSupport.requireClient() etc.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -36,12 +40,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (!token.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
                 try {
                     AuthUser user = jwtService.parseToken(token);
+                    // Spring Authentication object: principal = AuthUser, authorities = ROLE_<role>.
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (JwtException ignored) {
-                    // Leave context empty; SecurityFilterChain will return 401 for protected routes.
+                    // Invalid token → leave context empty; SecurityFilterChain returns 401 if route needs auth.
                     SecurityContextHolder.clearContext();
                 }
             }

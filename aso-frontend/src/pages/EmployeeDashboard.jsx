@@ -38,7 +38,12 @@ function CustomerAvailability({ booking }) {
     );
 }
 
-// Workshop view: claim available bookings, schedule, complete, reject, or cancel.
+/**
+ * Workshop dashboard: two lists from the API.
+ * - /bookings/available → queue of unclaimed SCHEDULED requests (claim / reject)
+ * - /workers/me/bookings → jobs assigned to this worker (schedule / complete / cancel)
+ * Each action maps 1:1 to a BookingController endpoint and a state-machine transition.
+ */
 export default function EmployeeDashboard() {
     const navigate = useNavigate();
     const session = getSession();

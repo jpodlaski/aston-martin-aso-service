@@ -1,7 +1,12 @@
 import axios from "axios";
 import { clearSession, getSession } from "./auth";
 
-// Shared Axios instance for all frontend API calls.
+/**
+ * Shared Axios client for the Spring API.
+ * Request interceptor: attach JWT Bearer token from localStorage.
+ * Response interceptor: on 401 (expired/invalid token), clear session and bounce to login.
+ * Backend remains the source of truth — this only improves UX.
+ */
 export const api = axios.create({
     baseURL: "http://localhost:8080",
 });

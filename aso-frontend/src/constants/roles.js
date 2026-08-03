@@ -1,3 +1,7 @@
+/**
+ * Role string constants for the React UI.
+ * Must match EmployeeRole on the backend (JWT claim "role" is compared to these arrays).
+ */
 // Must stay in sync with EmployeeRole.canManageWorkers() on the backend.
 export const MANAGEMENT_ROLES = ["ADMIN", "CEO", "COO"];
 

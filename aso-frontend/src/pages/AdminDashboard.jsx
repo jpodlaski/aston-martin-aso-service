@@ -21,7 +21,10 @@ function formatCancelledBy(value) {
     return labels[value] ?? value;
 }
 
-// Worker management and booking history; authorization comes from the JWT.
+/**
+ * Management dashboard: create/update/delete workers and view full booking history.
+ * UI is gated by MANAGEMENT_ROLES; API still checks AuthSupport.requireCanManageWorkers().
+ */
 export default function AdminDashboard() {
     const navigate = useNavigate();
     const session = getSession();
@@ -192,10 +195,11 @@ export default function AdminDashboard() {
                     />
                     <input
                         type="password"
-                        placeholder="Password"
+                        placeholder="Password (min. 8 characters)"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        minLength={8}
                     />
                     <select value={role} onChange={(e) => setRole(e.target.value)} required>
                         {ASSIGNABLE_ROLES.map((option) => (
