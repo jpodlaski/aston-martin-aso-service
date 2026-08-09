@@ -154,7 +154,7 @@ export default function EmployeeDashboard() {
         } finally {
             setLoading(false);
         }
-    }, [session?.token, session?.role]);
+    }, [session]);
 
     useEffect(() => {
         loadBookings();
