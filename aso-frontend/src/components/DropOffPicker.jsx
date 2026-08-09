@@ -7,11 +7,11 @@ function pad2(n) {
     return String(n).padStart(2, "0");
 }
 
-export function toDateKey(date) {
+function toDateKey(date) {
     return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
 }
 
-export function buildTimeSlots(startHour, endHour, stepMinutes) {
+function buildTimeSlots(startHour, endHour, stepMinutes) {
     const slots = [];
     for (let minutes = startHour * 60; minutes <= endHour * 60; minutes += stepMinutes) {
         const h = Math.floor(minutes / 60);
