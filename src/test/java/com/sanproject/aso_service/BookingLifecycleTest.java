@@ -1,5 +1,17 @@
 package com.sanproject.aso_service;
 
+import com.sanproject.aso_service.domain.Customer;
+import com.sanproject.aso_service.domain.EmployeeRole;
+import com.sanproject.aso_service.domain.Vehicle;
+import com.sanproject.aso_service.domain.Worker;
+import com.sanproject.aso_service.repository.CustomerRepository;
+import com.sanproject.aso_service.repository.VehicleRepository;
+import com.sanproject.aso_service.repository.WorkerRepository;
+import com.sanproject.aso_service.security.JwtService;
+import com.sanproject.aso_service.security.PasswordService;
+import com.sanproject.aso_service.service.BookingNotificationService;
+import com.sanproject.aso_service.service.CustomerNotificationService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +39,8 @@ import com.jayway.jsonpath.JsonPath;
 
 /**
  * End-to-end HTTP test of the booking state machine:
- * create → claim → schedule → complete (plus reject/cancel paths in other methods).
- * Uses real Spring context + MockMvc against the test Postgres DB; emails mocked.
+ * create → consultant accept → technician claim → complete
+ * (plus reject/cancel paths in other methods).
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,6 +76,7 @@ class BookingLifecycleTest {
 
     private Customer customer;
     private Vehicle vehicle;
+    private Worker consultant;
     private Worker worker;
     private Worker otherWorker;
 
@@ -92,6 +105,15 @@ class BookingLifecycleTest {
         vehicle.setCustomer(customer);
         vehicle = vehicleRepository.save(vehicle);
 
+        consultant = new Worker();
+        consultant.setFirstName("Chris");
+        consultant.setLastName("Consultant");
+        consultant.setEmail("chris@aso.local");
+        consultant.setLogin("chris");
+        consultant.setPasswordHash(passwordService.hash("secret"));
+        consultant.setRole(EmployeeRole.CLIENT_SERVICE_CONSULTANT);
+        consultant = workerRepository.save(consultant);
+
         worker = new Worker();
         worker.setFirstName("Morgan");
         worker.setLastName("Mechanic");
@@ -112,8 +134,26 @@ class BookingLifecycleTest {
     }
 
     @Test
-    void happyPath_createClaimScheduleComplete() throws Exception {
+    void happyPath_createAcceptClaimComplete() throws Exception {
         long bookingId = createBookingAsClient();
+
+        mockMvc.perform(get("/bookings/available").header("Authorization", consultantAuth()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].id", hasItem((int) bookingId)));
+
+        mockMvc.perform(get("/bookings/available").header("Authorization", workerAuth()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == " + bookingId + ")]").isEmpty());
+
+        String appointment = LocalDateTime.now().plusDays(2).withNano(0).format(ISO);
+        mockMvc.perform(post("/bookings/{id}/accept", bookingId)
+                        .header("Authorization", consultantAuth())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"scheduledDateTime\":\"" + appointment + "\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("READY_FOR_WORK"))
+                .andExpect(jsonPath("$.scheduledDateTime").value(appointment))
+                .andExpect(jsonPath("$.assignedWorker").value(nullValue()));
 
         mockMvc.perform(get("/bookings/available").header("Authorization", workerAuth()))
                 .andExpect(status().isOk())
@@ -134,15 +174,6 @@ class BookingLifecycleTest {
                 .andExpect(jsonPath("$.serviceTypes", hasSize(2)))
                 .andExpect(jsonPath("$.estimatedCost").value(350.00));
 
-        String appointment = LocalDateTime.now().plusDays(2).withNano(0).format(ISO);
-        mockMvc.perform(post("/bookings/{id}/schedule", bookingId)
-                        .header("Authorization", workerAuth())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"scheduledDateTime\":\"" + appointment + "\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.scheduledDateTime").value(appointment))
-                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
-
         mockMvc.perform(post("/bookings/{id}/complete", bookingId)
                         .header("Authorization", workerAuth())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -157,11 +188,11 @@ class BookingLifecycleTest {
     }
 
     @Test
-    void workerCanRejectUnclaimedBooking() throws Exception {
+    void consultantCanRejectUnclaimedBooking() throws Exception {
         long bookingId = createBookingAsClient();
 
         mockMvc.perform(post("/bookings/{id}/reject", bookingId)
-                        .header("Authorization", workerAuth())
+                        .header("Authorization", consultantAuth())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"reason\":\"Cannot service this model at this site\"}"))
                 .andExpect(status().isOk())
@@ -169,9 +200,27 @@ class BookingLifecycleTest {
                 .andExpect(jsonPath("$.cancelledBy").value("WORKSHOP"))
                 .andExpect(jsonPath("$.cancellationReason").value("Cannot service this model at this site"));
 
-        mockMvc.perform(get("/bookings/available").header("Authorization", workerAuth()))
+        mockMvc.perform(get("/bookings/available").header("Authorization", consultantAuth()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.id == " + bookingId + ")]").isEmpty());
+    }
+
+    @Test
+    void mechanicCannotAcceptOrReject() throws Exception {
+        long bookingId = createBookingAsClient();
+
+        String appointment = LocalDateTime.now().plusDays(2).withNano(0).format(ISO);
+        mockMvc.perform(post("/bookings/{id}/accept", bookingId)
+                        .header("Authorization", workerAuth())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"scheduledDateTime\":\"" + appointment + "\"}"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(post("/bookings/{id}/reject", bookingId)
+                        .header("Authorization", workerAuth())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"reason\":\"Nope\"}"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -181,15 +230,16 @@ class BookingLifecycleTest {
         mockMvc.perform(post("/bookings/{id}/cancel", bookingId)
                         .header("Authorization", clientAuth())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
+                        .content("{\"reason\":\"Plans changed\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CANCELLED"))
-                .andExpect(jsonPath("$.cancelledBy").value("CUSTOMER"));
+                .andExpect(jsonPath("$.cancelledBy").value("CUSTOMER"))
+                .andExpect(jsonPath("$.cancellationReason").value("Plans changed"));
     }
 
     @Test
     void assignedWorkerCanCancelWithReason() throws Exception {
-        long bookingId = createBookingAsClient();
+        long bookingId = acceptBooking(createBookingAsClient());
 
         mockMvc.perform(post("/bookings/{id}/claim", bookingId)
                         .header("Authorization", workerAuth())
@@ -208,21 +258,14 @@ class BookingLifecycleTest {
     }
 
     @Test
-    void otherWorkerCannotScheduleOrCompleteClaimedBooking() throws Exception {
-        long bookingId = createBookingAsClient();
+    void otherWorkerCannotCompleteClaimedBooking() throws Exception {
+        long bookingId = acceptBooking(createBookingAsClient());
 
         mockMvc.perform(post("/bookings/{id}/claim", bookingId)
                         .header("Authorization", workerAuth())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"serviceTypes\":[\"Alignment\"]}"))
                 .andExpect(status().isOk());
-
-        String appointment = LocalDateTime.now().plusDays(1).withNano(0).format(ISO);
-        mockMvc.perform(post("/bookings/{id}/schedule", bookingId)
-                        .header("Authorization", otherWorkerAuth())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"scheduledDateTime\":\"" + appointment + "\"}"))
-                .andExpect(status().isNotFound());
 
         mockMvc.perform(post("/bookings/{id}/complete", bookingId)
                         .header("Authorization", otherWorkerAuth())
@@ -233,7 +276,7 @@ class BookingLifecycleTest {
 
     @Test
     void cannotClaimAlreadyClaimedBooking() throws Exception {
-        long bookingId = createBookingAsClient();
+        long bookingId = acceptBooking(createBookingAsClient());
 
         mockMvc.perform(post("/bookings/{id}/claim", bookingId)
                         .header("Authorization", workerAuth())
@@ -249,17 +292,11 @@ class BookingLifecycleTest {
     }
 
     @Test
-    void cannotRejectClaimedBooking() throws Exception {
-        long bookingId = createBookingAsClient();
-
-        mockMvc.perform(post("/bookings/{id}/claim", bookingId)
-                        .header("Authorization", workerAuth())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"serviceTypes\":[\"Inspection\"]}"))
-                .andExpect(status().isOk());
+    void cannotRejectAcceptedBooking() throws Exception {
+        long bookingId = acceptBooking(createBookingAsClient());
 
         mockMvc.perform(post("/bookings/{id}/reject", bookingId)
-                        .header("Authorization", otherWorkerAuth())
+                        .header("Authorization", consultantAuth())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"reason\":\"Too late\"}"))
                 .andExpect(status().isBadRequest());
@@ -267,7 +304,7 @@ class BookingLifecycleTest {
 
     @Test
     void clientCannotClaimBooking() throws Exception {
-        long bookingId = createBookingAsClient();
+        long bookingId = acceptBooking(createBookingAsClient());
 
         mockMvc.perform(post("/bookings/{id}/claim", bookingId)
                         .header("Authorization", clientAuth())
@@ -277,14 +314,15 @@ class BookingLifecycleTest {
     }
 
     @Test
-    void createBookingRequiresAvailability() throws Exception {
+    void createBookingRequiresDropOffTime() throws Exception {
         mockMvc.perform(post("/bookings")
                         .header("Authorization", clientAuth())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "vehicleId": %d,
-                                  "customerDescription": "Noise only"
+                                  "customerDescription": "Noise only",
+                                  "availabilityNotes": "Weekday mornings"
                                 }
                                 """.formatted(vehicle.getId())))
                 .andExpect(status().isBadRequest());
@@ -298,6 +336,7 @@ class BookingLifecycleTest {
                                 {
                                   "vehicleId": %d,
                                   "customerDescription": "Strange noise when braking",
+                                  "estimatedDropOffTime": "2030-06-15T10:30:00",
                                   "availabilityNotes": "Weekday mornings"
                                 }
                                 """.formatted(vehicle.getId())))
@@ -309,11 +348,29 @@ class BookingLifecycleTest {
         return ((Number) JsonPath.read(result.getResponse().getContentAsString(), "$.id")).longValue();
     }
 
+    private long acceptBooking(long bookingId) throws Exception {
+        String appointment = LocalDateTime.now().plusDays(2).withNano(0).format(ISO);
+        mockMvc.perform(post("/bookings/{id}/accept", bookingId)
+                        .header("Authorization", consultantAuth())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"scheduledDateTime\":\"" + appointment + "\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("READY_FOR_WORK"));
+        return bookingId;
+    }
+
     private String clientAuth() {
         return bearer(jwtService.createToken(
                 customer.getId(),
                 "CLIENT",
                 customer.getFirstName() + " " + customer.getLastName()));
+    }
+
+    private String consultantAuth() {
+        return bearer(jwtService.createToken(
+                consultant.getId(),
+                consultant.getRole().name(),
+                consultant.getFirstName() + " " + consultant.getLastName()));
     }
 
     private String workerAuth() {

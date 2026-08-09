@@ -1,0 +1,16 @@
+# Clojure tooling / caches
+.cpcache/
+.nrepl-port
+.lsp/
+.clj-kondo/
+.rebel_readline_history
+.calva/
+
+# OS / editor
+.DS_Store
+.idea/
+*.iml
+
+# Env
+.env
+.env.*

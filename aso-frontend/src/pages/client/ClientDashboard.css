@@ -1,0 +1,754 @@
+/* Client / worker dashboard: branded Aston Martin field behind frosted content. */
+
+.client-dashboard-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+.client-dashboard-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: #033c45;
+  pointer-events: none;
+}
+
+.client-dashboard-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8, 10, 12, 0.45) 0%,
+      rgba(8, 10, 12, 0.28) 40%,
+      rgba(8, 10, 12, 0.55) 100%
+    );
+}
+
+.client-dashboard-shell .client-dashboard {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+
+.client-dashboard-shell .dashboard-header {
+  border-bottom-color: rgba(243, 244, 242, 0.12);
+}
+
+.client-dashboard-shell .booking-card,
+.client-dashboard-shell .vehicle-card {
+  background: rgba(16, 20, 24, 0.72);
+  border-color: rgba(243, 244, 242, 0.14);
+  backdrop-filter: blur(10px);
+}
+
+.client-dashboard-shell .logout-btn {
+  background: rgba(10, 12, 14, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.booking-card-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.booking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.booking-row {
+  border: 1px solid rgba(243, 244, 242, 0.14);
+  background: rgba(16, 20, 24, 0.94);
+}
+
+.booking-row-active {
+  border-left: 3px solid #8fbfa5;
+  background: rgba(143, 191, 165, 0.08);
+}
+
+.booking-row-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+}
+
+.booking-row-toggle {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.booking-row-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.booking-row-id {
+  color: var(--text-h);
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.booking-status {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+  border: 1px solid rgba(243, 244, 242, 0.22);
+  padding: 0.18rem 0.45rem;
+}
+
+.booking-status-completed {
+  border-color: rgba(143, 191, 165, 0.45);
+  color: #8fbfa5;
+}
+
+.booking-status-in-progress {
+  border-color: rgba(143, 191, 165, 0.45);
+  color: #8fbfa5;
+}
+
+.booking-status-ready-for-work {
+  border-color: rgba(143, 191, 165, 0.35);
+  color: #9ec5a0;
+}
+
+.booking-status-scheduled {
+  border-color: rgba(243, 244, 242, 0.28);
+}
+
+.booking-status-cancelled {
+  border-color: rgba(240, 180, 170, 0.4);
+  color: #f0b4aa;
+}
+
+.booking-row-chevron {
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.booking-row-title {
+  margin: 0;
+  color: var(--text-h);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.booking-row-meta {
+  margin: 0.25rem 0 0;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.booking-cancel-panel {
+  margin-top: 1rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid rgba(243, 244, 242, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.booking-cancel-field {
+  display: block;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0;
+}
+
+.booking-cancel-field input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(243, 244, 242, 0.16);
+  border-radius: 0;
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+  color: var(--text-h);
+  background: rgba(10, 12, 14, 0.35);
+}
+
+.booking-cancel-field input:focus {
+  outline: 1px solid var(--accent-bright);
+  outline-offset: 0;
+}
+
+.booking-row-actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: flex-end;
+}
+
+.booking-row-details {
+  padding: 0 1rem 0.95rem;
+  border-top: 1px solid rgba(243, 244, 242, 0.1);
+}
+
+.booking-detail-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding-top: 0.85rem;
+}
+
+.booking-detail-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.25rem;
+}
+
+.booking-detail-item {
+  min-width: 0;
+}
+
+.booking-detail-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.booking-detail-item p {
+  margin: 0;
+  color: var(--text-h);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .booking-detail-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.booking-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.booking-card-aside {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.invoice-download-btn {
+  white-space: nowrap;
+}
+
+.booking-vehicle-filter {
+  display: block;
+  max-width: 28rem;
+  margin: 0 0 1rem;
+}
+
+.booking-vehicle-filter-label {
+  display: block;
+  margin: 0 0 0.4rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.booking-vehicle-filter select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(243, 244, 242, 0.16);
+  border-radius: 0;
+  padding: 0.75rem 2.25rem 0.75rem 0.9rem;
+  font: inherit;
+  color: var(--text-h);
+  background: rgba(16, 20, 24, 0.72);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text) 50%),
+    linear-gradient(135deg, var(--text) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.15rem) calc(50% - 0.15rem),
+    calc(100% - 0.85rem) calc(50% - 0.15rem);
+  background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+}
+
+.booking-vehicle-filter select:focus {
+  outline: 1px solid var(--accent-bright);
+  outline-offset: 0;
+}
+
+.booking-vehicle-filter select option {
+  background: #12161a;
+  color: var(--text-h);
+}
+
+.archive-find {
+  display: block;
+  margin: 0 0 1rem;
+  max-width: 28rem;
+  text-align: left;
+}
+
+.archive-find-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.archive-find input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(243, 244, 242, 0.16);
+  border-radius: 0;
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  color: var(--text-h);
+  background: rgba(16, 20, 24, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.archive-find input:focus {
+  outline: 1px solid var(--accent-bright);
+  outline-offset: 0;
+}
+
+.vehicle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.vehicle-row {
+  border: 1px solid rgba(243, 244, 242, 0.14);
+  background: rgba(16, 20, 24, 0.94);
+}
+
+.vehicle-row-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+}
+
+.vehicle-row-toggle {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vehicle-row-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+}
+
+.vehicle-row-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.vehicle-row-title {
+  margin: 0;
+  color: var(--text-h);
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.vehicle-row-meta {
+  margin: 0.2rem 0 0;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.vehicle-row-action {
+  flex-shrink: 0;
+}
+
+.vehicle-remove-note {
+  margin: 0.85rem 0 0;
+  color: var(--text-h);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.vehicle-row-expanded-actions {
+  margin-top: 0.85rem;
+}
+
+.booking-expanded-actions {
+  margin-top: 0.85rem;
+}
+
+.vehicle-row-details {
+  padding: 0 1rem 0.95rem;
+  border-top: 1px solid rgba(243, 244, 242, 0.1);
+}
+
+.vehicle-history-block {
+  margin-top: 1.35rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(243, 244, 242, 0.12);
+}
+
+.vehicle-history-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 0;
+  padding: 0.35rem 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.vehicle-history-toggle:hover {
+  color: var(--text-h);
+}
+
+.vehicle-history-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  margin-left: 0.55rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid rgba(243, 244, 242, 0.2);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.vehicle-history-chevron {
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.vehicle-list-history {
+  margin-top: 0.75rem;
+}
+
+.vehicle-row-history {
+  opacity: 0.88;
+}
+
+.vehicle-history-badge {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+
+@media (max-width: 640px) {
+  .vehicle-row-top {
+    flex-direction: column;
+  }
+
+  .vehicle-row-action,
+  .vehicle-history-badge {
+    align-self: flex-start;
+  }
+
+  .booking-row-top {
+    flex-direction: column;
+  }
+
+  .booking-row-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .invoice-download-btn {
+    width: auto;
+  }
+}
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.menu {
+  position: relative;
+}
+
+.menu-btn {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 2.45rem;
+  height: 2.45rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: rgba(10, 12, 14, 0.35);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.menu-btn:hover,
+.menu-btn[aria-expanded="true"] {
+  border-color: var(--text-h);
+  background: rgba(243, 244, 242, 0.06);
+}
+
+.menu-btn span {
+  display: block;
+  width: 1.05rem;
+  height: 1.5px;
+  margin: 0 auto;
+  background: var(--text-h);
+}
+
+.menu-panel {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  z-index: 5;
+  min-width: 13.5rem;
+  padding: 0.35rem;
+  border: 1px solid rgba(243, 244, 242, 0.16);
+  background: rgba(12, 15, 18, 0.94);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+  animation: menu-fade 0.18s ease-out both;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.menu-item:hover,
+.menu-item-active {
+  background: rgba(243, 244, 242, 0.08);
+  color: var(--text-h);
+}
+
+.dashboard-panel {
+  animation: panel-fade 0.28s ease-out both;
+}
+
+.account-lede {
+  margin: 0 0 1.25rem;
+  color: var(--text);
+  max-width: 28rem;
+}
+
+.account-password-panel {
+  margin-top: 0.25rem;
+  padding: 1rem 1.1rem 1.15rem;
+  border: 1px solid rgba(243, 244, 242, 0.14);
+  background: rgba(16, 20, 24, 0.72);
+  backdrop-filter: blur(10px);
+  animation: panel-fade 0.28s ease-out both;
+}
+
+.account-password-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.account-password-toolbar h3 {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.account-password-panel .auth-form {
+  margin-top: 0.75rem;
+}
+
+.account-danger-zone {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(243, 244, 242, 0.12);
+  max-width: 36rem;
+  text-align: left;
+}
+
+.account-danger-zone h3 {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.account-danger-zone > p {
+  margin: 0 0 1rem;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.account-danger-zone > .danger-btn {
+  margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  text-align: center;
+}
+
+.account-delete-panel {
+  margin-top: 0.25rem;
+  padding: 1rem 1.1rem 1.15rem;
+  border: 1px solid rgba(196, 92, 74, 0.35);
+  background: rgba(196, 92, 74, 0.08);
+  text-align: left;
+}
+
+.account-delete-panel > p {
+  margin: 0 0 0.85rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.account-delete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: stretch;
+}
+
+.account-delete-actions .danger-btn,
+.account-delete-actions .logout-btn {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  text-align: center;
+}
+
+.account-delete-panel .form-error,
+.account-delete-panel .form-success {
+  margin: 0.85rem 0 0;
+  text-align: left;
+  text-wrap: pretty;
+  line-height: 1.45;
+  max-width: 100%;
+}
+
+@keyframes menu-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes panel-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel,
+  .dashboard-panel {
+    animation: none;
+  }
+}

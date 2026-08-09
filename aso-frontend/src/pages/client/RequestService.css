@@ -1,0 +1,185 @@
+/* Request service — same frosted shell language as Add vehicle. */
+
+.request-service-form {
+  text-align: left;
+  max-width: 44rem;
+  margin: 0;
+  padding: 0 0 2rem;
+  animation: request-fade 0.28s ease-out both;
+}
+
+.request-field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.request-label {
+  display: block;
+  margin: 0 0 0.45rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.request-service-form fieldset.request-field {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1rem;
+  min-inline-size: 0;
+}
+
+.request-service-form legend.request-label {
+  padding: 0;
+}
+
+.request-service-form select,
+.request-service-form textarea,
+.request-service-form input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(243, 244, 242, 0.16);
+  border-radius: 0;
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  color: var(--text-h);
+  background: rgba(16, 20, 24, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.request-service-form select {
+  cursor: pointer;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text) 50%),
+    linear-gradient(135deg, var(--text) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.15rem) calc(50% - 0.15rem),
+    calc(100% - 0.85rem) calc(50% - 0.15rem);
+  background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+  padding-right: 2.25rem;
+}
+
+.request-service-form select option {
+  background: #12161a;
+  color: var(--text-h);
+}
+
+.request-service-form textarea {
+  resize: vertical;
+  min-height: 6.5rem;
+  line-height: 1.45;
+}
+
+.request-service-form select:focus,
+.request-service-form textarea:focus,
+.request-service-form input:focus {
+  outline: 1px solid var(--accent-bright);
+  outline-offset: 0;
+}
+
+.request-hint {
+  margin: 0.15rem 0 0;
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.request-schedule-error {
+  margin: 0.85rem 0 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(196, 92, 74, 0.45);
+  background: rgba(196, 92, 74, 0.12);
+  color: #f0b4aa;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.request-service-form .request-field.has-error .dropoff-calendar,
+.request-service-form .request-field.has-error .dropoff-time-panel {
+  border-color: rgba(196, 92, 74, 0.55);
+}
+
+
+.request-word-count {
+  display: block;
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+.request-word-count.at-limit {
+  color: #f0b4aa;
+}
+
+.request-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+}
+
+.request-service-page .submit-vehicle-btn {
+  border: 1px solid var(--snow);
+  border-radius: 0;
+  background: var(--snow);
+  color: var(--ink);
+  padding: 0.75rem 1.25rem;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.request-service-page .submit-vehicle-btn:hover:not(:disabled) {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.request-service-page .submit-vehicle-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.request-service-page .config-error {
+  color: #f0b4aa;
+  margin-top: 0.75rem;
+}
+
+.request-service-status,
+.request-service-empty {
+  text-align: left;
+  color: var(--text);
+}
+
+.request-service-empty p {
+  margin: 0 0 1rem;
+}
+
+.request-service-empty .submit-vehicle-btn {
+  display: inline-flex;
+}
+
+@keyframes request-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .request-service-form {
+    animation: none;
+  }
+}

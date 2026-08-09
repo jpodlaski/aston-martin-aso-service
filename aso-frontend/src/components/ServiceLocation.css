@@ -1,0 +1,23 @@
+.service-location {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.service-location-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.service-location-address {
+  display: block;
+  color: var(--text-h);
+  font-size: 0.92rem;
+}

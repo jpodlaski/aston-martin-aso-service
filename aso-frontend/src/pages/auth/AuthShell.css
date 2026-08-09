@@ -1,0 +1,72 @@
+/* Shared dark auth panel for login / register / password flows. */
+
+.auth-shell {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.25rem;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(31, 77, 58, 0.35), transparent 55%),
+    linear-gradient(180deg, #0a0c0e 0%, #12161a 100%);
+  animation: auth-fade 0.55s ease-out both;
+}
+
+.auth-shell-panel {
+  width: min(100%, 26rem);
+  text-align: left;
+}
+
+.auth-shell .logo {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 1.75rem;
+  text-decoration: none;
+  line-height: 0;
+  transition: opacity 0.25s ease;
+}
+
+.auth-shell .logo:hover {
+  opacity: 0.88;
+}
+
+.auth-shell .logo img {
+  display: block;
+  width: clamp(10rem, 48vw, 14rem);
+  height: auto;
+  object-fit: contain;
+}
+
+.auth-shell h1 {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.auth-shell-lede {
+  margin: 0.55rem 0 0;
+  color: var(--text);
+}
+
+.auth-shell .auth-form {
+  margin: 1.75rem 0 0;
+  max-width: none;
+}
+
+.auth-shell .auth-links {
+  margin-top: 1.25rem;
+}
+
+@keyframes auth-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

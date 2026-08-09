@@ -1,37 +1,45 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import VerifyEmail from "./pages/VerifyEmail";
-import ResendVerification from "./pages/ResendVerification";
-import EmployeeLogin from "./pages/EmployeeLogin";
-import AddVehicle from "./pages/AddVehicle";
-import ClientDashboard from "./pages/ClientDashboard";
-import RequestService from "./pages/RequestService";
-import EmployeeDashboard from "./pages/EmployeeDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
+import Landing from "./pages/Landing";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+import VerifyEmail from "./pages/auth/VerifyEmail";
+import ResendVerification from "./pages/auth/ResendVerification";
+import ConfirmAccountDeletion from "./pages/auth/ConfirmAccountDeletion";
+import EmployeeLogin from "./pages/auth/EmployeeLogin";
+import AddVehicle from "./pages/client/AddVehicle";
+import ClientDashboard from "./pages/client/ClientDashboard";
+import RequestService from "./pages/client/RequestService";
+import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import PrivateRoute from "./components/PrivateRoute";
+import SessionSync from "./components/SessionSync";
+import FakeCookieBanner from "./components/FakeCookieBanner";
 import { MANAGEMENT_ROLES, WORKSHOP_ROLES } from "./constants/roles";
 
 /**
  * Front-door routing for the three user worlds:
+ * - public landing / auth
  * - CLIENT → /client*
  * - workshop staff → /employee
  * - management → /admin
- * Public login/register routes stay open; everything else wraps PrivateRoute (session + role).
  */
 export default function App() {
   return (
       <BrowserRouter>
+        <SessionSync />
+        <FakeCookieBanner />
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/resend-verification" element={<ResendVerification />} />
+          <Route path="/confirm-account-deletion" element={<ConfirmAccountDeletion />} />
           <Route path="/employee-login" element={<EmployeeLogin />} />
           <Route
               path="/client"

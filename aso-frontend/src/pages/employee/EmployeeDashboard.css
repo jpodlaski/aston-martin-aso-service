@@ -1,0 +1,147 @@
+/* Worker dashboard: same frosted shell as client; action forms inside expanded rows. */
+
+.employee-dashboard .worker-actions-panel {
+  margin-top: 1rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid rgba(243, 244, 242, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.employee-dashboard .worker-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+}
+
+.employee-dashboard .worker-field {
+  display: block;
+  margin: 0;
+}
+
+.employee-dashboard .worker-field input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(243, 244, 242, 0.16);
+  border-radius: 0;
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+  color: var(--text-h);
+  background: rgba(10, 12, 14, 0.35);
+}
+
+.employee-dashboard .worker-field input:focus {
+  outline: 1px solid var(--accent-bright);
+  outline-offset: 0;
+}
+
+.employee-dashboard .worker-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.employee-dashboard .worker-action-row .danger-btn {
+  margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.employee-dashboard .worker-action-row .primary-btn {
+  min-height: 2.5rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.employee-dashboard .worker-hint {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.employee-dashboard .capacity-status {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.employee-dashboard .capacity-status-pending {
+  color: var(--text);
+}
+
+.employee-dashboard .capacity-status-ok {
+  color: #9ec5a0;
+}
+
+.employee-dashboard .capacity-status-full {
+  color: #d4a19a;
+}
+
+.employee-dashboard .worker-action-row .primary-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.employee-dashboard .availability-muted {
+  margin: 0.35rem 0 0;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.employee-dashboard .archive-find {
+  display: block;
+  margin: 0 0 1rem;
+  max-width: 28rem;
+  text-align: left;
+}
+
+.employee-dashboard .archive-find-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.employee-dashboard .archive-find input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(243, 244, 242, 0.16);
+  border-radius: 0;
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  color: var(--text-h);
+  background: rgba(16, 20, 24, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.employee-dashboard .archive-find input:focus {
+  outline: 1px solid var(--accent-bright);
+  outline-offset: 0;
+}
+
+@media (max-width: 640px) {
+  .employee-dashboard .worker-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

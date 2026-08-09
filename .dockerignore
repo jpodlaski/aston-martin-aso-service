@@ -1,0 +1,5 @@
+# App image only needs the packaged JAR (built on the host).
+*
+!target/
+!target/*.jar
+!Dockerfile

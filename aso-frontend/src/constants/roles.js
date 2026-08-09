@@ -33,3 +33,11 @@ export const ROLE_LABELS = {
 export function roleLabel(role) {
     return ROLE_LABELS[role] ?? role;
 }
+
+export function isConsultant(role) {
+    return role === "CLIENT_SERVICE_CONSULTANT";
+}
+
+export function isTechnician(role) {
+    return role === "MECHANIC" || role === "APPRENTICE_MECHANIC";
+}

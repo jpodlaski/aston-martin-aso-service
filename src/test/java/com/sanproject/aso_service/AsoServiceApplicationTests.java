@@ -1,5 +1,8 @@
 package com.sanproject.aso_service;
 
+import com.sanproject.aso_service.service.BookingNotificationService;
+import com.sanproject.aso_service.service.CustomerNotificationService;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

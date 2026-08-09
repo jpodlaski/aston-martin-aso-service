@@ -12,7 +12,7 @@ export default function PrivateRoute({ children, roles }) {
         // Staff routes (any non-CLIENT role) redirect to employee login, not client login.
         const loginPath = roles?.some((role) => role !== "CLIENT")
             ? "/employee-login"
-            : "/";
+            : "/login";
         return <Navigate to={loginPath} replace />;
     }
 

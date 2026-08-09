@@ -1,5 +1,22 @@
 package com.sanproject.aso_service;
 
+import com.sanproject.aso_service.domain.Admin;
+import com.sanproject.aso_service.domain.BookingStatus;
+import com.sanproject.aso_service.domain.Customer;
+import com.sanproject.aso_service.domain.EmployeeRole;
+import com.sanproject.aso_service.domain.ServiceBooking;
+import com.sanproject.aso_service.domain.Vehicle;
+import com.sanproject.aso_service.domain.Worker;
+import com.sanproject.aso_service.repository.AdminRepository;
+import com.sanproject.aso_service.repository.CustomerRepository;
+import com.sanproject.aso_service.repository.ServiceBookingRepository;
+import com.sanproject.aso_service.repository.VehicleRepository;
+import com.sanproject.aso_service.repository.WorkerRepository;
+import com.sanproject.aso_service.security.JwtService;
+import com.sanproject.aso_service.security.PasswordService;
+import com.sanproject.aso_service.service.BookingNotificationService;
+import com.sanproject.aso_service.service.CustomerNotificationService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +83,10 @@ class AuthorizationAccessTest {
     private Customer customerB;
     private Worker workerA;
     private Worker workerB;
+    private Worker consultant;
     private Admin admin;
-    private ServiceBooking unclaimedBooking;
+    private ServiceBooking scheduledBooking;
+    private ServiceBooking readyBooking;
     private ServiceBooking assignedToWorkerA;
 
     @BeforeEach
@@ -121,6 +140,15 @@ class AuthorizationAccessTest {
         workerB.setRole(EmployeeRole.MECHANIC);
         workerB = workerRepository.save(workerB);
 
+        consultant = new Worker();
+        consultant.setFirstName("Chris");
+        consultant.setLastName("Consultant");
+        consultant.setEmail("chris@aso.local");
+        consultant.setLogin("chris");
+        consultant.setPasswordHash(passwordService.hash("secret"));
+        consultant.setRole(EmployeeRole.CLIENT_SERVICE_CONSULTANT);
+        consultant = workerRepository.save(consultant);
+
         admin = adminRepository.findByLoginIgnoreCase("admin").orElseGet(() -> {
             Admin seeded = new Admin();
             seeded.setFirstName("Admin");
@@ -132,14 +160,23 @@ class AuthorizationAccessTest {
             return adminRepository.save(seeded);
         });
 
-        unclaimedBooking = new ServiceBooking();
-        unclaimedBooking.setVehicle(vehicleA);
-        unclaimedBooking.setCustomerName("Alice Client");
-        unclaimedBooking.setCarModel("DB12 Coupe");
-        unclaimedBooking.setCustomerDescription("Noise");
-        unclaimedBooking.setAvailabilityNotes("mornings");
-        unclaimedBooking.setStatus(BookingStatus.SCHEDULED);
-        unclaimedBooking = bookingRepository.save(unclaimedBooking);
+        scheduledBooking = new ServiceBooking();
+        scheduledBooking.setVehicle(vehicleA);
+        scheduledBooking.setCustomerName("Alice Client");
+        scheduledBooking.setCarModel("DB12 Coupe");
+        scheduledBooking.setCustomerDescription("Noise");
+        scheduledBooking.setAvailabilityNotes("mornings");
+        scheduledBooking.setStatus(BookingStatus.SCHEDULED);
+        scheduledBooking = bookingRepository.save(scheduledBooking);
+
+        readyBooking = new ServiceBooking();
+        readyBooking.setVehicle(vehicleA);
+        readyBooking.setCustomerName("Alice Client");
+        readyBooking.setCarModel("DB12 Coupe");
+        readyBooking.setCustomerDescription("Ready job");
+        readyBooking.setAvailabilityNotes("afternoons");
+        readyBooking.setStatus(BookingStatus.READY_FOR_WORK);
+        readyBooking = bookingRepository.save(readyBooking);
 
         assignedToWorkerA = new ServiceBooking();
         assignedToWorkerA.setVehicle(vehicleA);
@@ -156,27 +193,41 @@ class AuthorizationAccessTest {
 
     @Test
     void anonymousCannotViewBooking() throws Exception {
-        mockMvc.perform(get("/bookings/{id}", unclaimedBooking.getId()))
+        mockMvc.perform(get("/bookings/{id}", scheduledBooking.getId()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void clientCanViewOwnBooking() throws Exception {
-        mockMvc.perform(get("/bookings/{id}", unclaimedBooking.getId())
+        mockMvc.perform(get("/bookings/{id}", scheduledBooking.getId())
                         .header("Authorization", bearer(clientToken(customerA))))
                 .andExpect(status().isOk());
     }
 
     @Test
     void clientCannotViewAnotherClientsBooking() throws Exception {
-        mockMvc.perform(get("/bookings/{id}", unclaimedBooking.getId())
+        mockMvc.perform(get("/bookings/{id}", scheduledBooking.getId())
                         .header("Authorization", bearer(clientToken(customerB))))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    void workerCanViewUnclaimedBooking() throws Exception {
-        mockMvc.perform(get("/bookings/{id}", unclaimedBooking.getId())
+    void consultantCanViewScheduledBooking() throws Exception {
+        mockMvc.perform(get("/bookings/{id}", scheduledBooking.getId())
+                        .header("Authorization", bearer(workerToken(consultant))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void mechanicCannotViewScheduledBooking() throws Exception {
+        mockMvc.perform(get("/bookings/{id}", scheduledBooking.getId())
+                        .header("Authorization", bearer(workerToken(workerB))))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void mechanicCanViewReadyForWorkBooking() throws Exception {
+        mockMvc.perform(get("/bookings/{id}", readyBooking.getId())
                         .header("Authorization", bearer(workerToken(workerB))))
                 .andExpect(status().isOk());
     }
@@ -214,15 +265,15 @@ class AuthorizationAccessTest {
     @Test
     void legacyBookingMutatorsAreGone() throws Exception {
         String token = bearer(adminToken());
-        mockMvc.perform(put("/bookings/{id}", unclaimedBooking.getId())
+        mockMvc.perform(put("/bookings/{id}", scheduledBooking.getId())
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isMethodNotAllowed());
-        mockMvc.perform(delete("/bookings/{id}", unclaimedBooking.getId())
+        mockMvc.perform(delete("/bookings/{id}", scheduledBooking.getId())
                         .header("Authorization", token))
                 .andExpect(status().isMethodNotAllowed());
-        mockMvc.perform(patch("/bookings/{id}/status", unclaimedBooking.getId())
+        mockMvc.perform(patch("/bookings/{id}/status", scheduledBooking.getId())
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\":\"COMPLETED\"}"))

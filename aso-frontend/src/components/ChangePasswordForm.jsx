@@ -2,13 +2,28 @@ import { useState } from "react";
 import { api } from "../services/api";
 
 // Shared self-service password change for client, worker, and admin dashboards.
-export default function ChangePasswordForm() {
+export default function ChangePasswordForm({ embedded = false }) {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
+
+    // Show mismatch as soon as the user has typed something in confirm.
+    const passwordsMismatch =
+        confirmPassword.length > 0 && newPassword !== confirmPassword;
+    const canSubmit =
+        !loading
+        && currentPassword.length > 0
+        && newPassword.length >= 8
+        && confirmPassword.length > 0
+        && !passwordsMismatch;
+
+    const clearFeedback = () => {
+        if (error) setError("");
+        if (success) setSuccess("");
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -37,16 +52,22 @@ export default function ChangePasswordForm() {
         }
     };
 
-    return (
-        <section className="section-block">
-            <h2>Change password</h2>
+    const form = (
+        <>
             <p>Enter your current password and choose a new one (at least 8 characters).</p>
-            <form className="auth-form" style={{ maxWidth: "100%", margin: "1rem 0 0" }} onSubmit={handleSubmit}>
+            <form
+                className="auth-form"
+                style={{ maxWidth: "100%", margin: "1rem 0 0" }}
+                onSubmit={handleSubmit}
+            >
                 <input
                     type="password"
                     placeholder="Current password"
                     value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    onChange={(e) => {
+                        clearFeedback();
+                        setCurrentPassword(e.target.value);
+                    }}
                     autoComplete="current-password"
                     required
                 />
@@ -54,7 +75,10 @@ export default function ChangePasswordForm() {
                     type="password"
                     placeholder="New password"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    onChange={(e) => {
+                        clearFeedback();
+                        setNewPassword(e.target.value);
+                    }}
                     autoComplete="new-password"
                     minLength={8}
                     required
@@ -63,17 +87,35 @@ export default function ChangePasswordForm() {
                     type="password"
                     placeholder="Confirm new password"
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => {
+                        clearFeedback();
+                        setConfirmPassword(e.target.value);
+                    }}
                     autoComplete="new-password"
                     minLength={8}
                     required
+                    aria-invalid={passwordsMismatch}
                 />
-                <button type="submit" disabled={loading}>
+                {passwordsMismatch && (
+                    <p className="form-error">Passwords do not match.</p>
+                )}
+                <button type="submit" disabled={!canSubmit}>
                     {loading ? "Updating…" : "Update password"}
                 </button>
                 {error && <p className="form-error">{error}</p>}
                 {success && <p className="form-success">{success}</p>}
             </form>
+        </>
+    );
+
+    if (embedded) {
+        return form;
+    }
+
+    return (
+        <section className="section-block">
+            <h2>Change password</h2>
+            {form}
         </section>
     );
 }

@@ -1,5 +1,15 @@
 package com.sanproject.aso_service;
 
+import com.sanproject.aso_service.domain.AccountTokenPurpose;
+import com.sanproject.aso_service.domain.Customer;
+import com.sanproject.aso_service.domain.CustomerAccountToken;
+import com.sanproject.aso_service.repository.CustomerAccountTokenRepository;
+import com.sanproject.aso_service.repository.CustomerRepository;
+import com.sanproject.aso_service.security.PasswordService;
+import com.sanproject.aso_service.service.AccountTokenService;
+import com.sanproject.aso_service.service.BookingNotificationService;
+import com.sanproject.aso_service.service.CustomerNotificationService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

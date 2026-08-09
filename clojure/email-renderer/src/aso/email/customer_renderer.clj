@@ -1,21 +1,15 @@
 (ns aso.email.customer-renderer
   "Renders welcome, verification, password-reset, and vehicle emails."
-  (:require [clojure.string :as str]))
-
-(defn- escape-html [value]
-  (-> (str (or value ""))
-      (str/replace "&" "&amp;")
-      (str/replace "<" "&lt;")
-      (str/replace ">" "&gt;")
-      (str/replace "\"" "&quot;")))
+  (:require [aso.email.layout :as layout]
+            [clojure.string :as str]))
 
 (defn- spec-line [label value]
   (when (and value (not (str/blank? (str value))))
-    (str label ": " value)))
+    [label value]))
 
-(defn- vehicle-spec-lines
+(defn- vehicle-spec-pairs
   [{:keys [carModel modelLine productionYear engine power transmission drivetrain vin]}]
-  (let [model (or modelLine carModel)] ;; prefer short model line (e.g. DBX) in emails
+  (let [model (or modelLine carModel)]
     (vec (remove nil?
                  [(spec-line "Model" model)
                   (spec-line "Production year" productionYear)
@@ -25,12 +19,32 @@
                   (spec-line "Drivetrain" drivetrain)
                   (spec-line "VIN" vin)]))))
 
+(defn- action-email
+  [customer-name subject intro cta-label action-url & {:keys [extra-lines]}]
+  (let [name (or customer-name "Customer")
+        text-extra (when (seq extra-lines)
+                     (str "\n" (str/join "\n" extra-lines)))
+        text-body (layout/wrap-text
+                   name
+                   (str intro
+                        (when action-url
+                          (str "\n\n" cta-label ":\n" action-url))
+                        text-extra))
+        html-body (layout/wrap-html
+                   name
+                   (str (layout/p intro)
+                        (layout/cta-html cta-label action-url)
+                        (when (seq extra-lines)
+                          (str/join "" (map layout/p extra-lines)))))]
+    {:subject subject
+     :textBody text-body
+     :htmlBody html-body}))
+
 (defn render-customer-email
-  [{:keys [event customerName carModel vin modelLine productionYear engine power transmission drivetrain actionUrl]}]
+  [{:keys [event customerName carModel vin modelLine productionYear engine power
+           transmission drivetrain actionUrl]}]
   (let [name (or customerName "Customer")
-        safe-name (escape-html name)
-        safe-url (escape-html actionUrl)
-        spec-lines (vehicle-spec-lines
+        spec-pairs (vehicle-spec-pairs
                     {:carModel carModel
                      :modelLine modelLine
                      :productionYear productionYear
@@ -38,111 +52,102 @@
                      :power power
                      :transmission transmission
                      :drivetrain drivetrain
-                     :vin vin})]
+                     :vin vin})
+        spec-text (layout/details-text spec-pairs)
+        spec-html (layout/details-table spec-pairs)]
     (case event
       "customer_registered"
-      {:subject "Aston Martin ASO – welcome"
-       :textBody (str "Hello " name ",\n\n"
-                      "Your Aston Martin ASO Service account has been registered.\n\n"
-                      (if actionUrl
-                        (str "Please verify your email by opening this link before signing in:\n"
-                             actionUrl
-                             "\n\nThis link expires after 24 hours.\n\n")
-                        "Please verify your email before signing in.\n\n")
-                      "Thank you for choosing Aston Martin ASO Service.")
-       :htmlBody (str "<html><body>"
-                      "<p>Hello " safe-name ",</p>"
-                      "<p>Your <strong>Aston Martin ASO Service</strong> account has been registered.</p>"
-                      (if actionUrl
-                        (str "<p>Please verify your email before signing in:</p>"
-                             "<p><a href=\"" safe-url "\">Verify email</a></p>"
-                             "<p>Or paste this link into your browser:<br/>" safe-url "</p>"
-                             "<p>This link expires after 24 hours.</p>")
-                        "<p>Please verify your email before signing in.</p>")
-                      "<p>Thank you for choosing Aston Martin ASO Service.</p>"
-                      "</body></html>")}
+      (action-email
+       name
+       "Aston Martin ASO – welcome"
+       (str "Your " layout/brand-name " account has been registered. "
+            "Please verify your email before signing in.")
+       "Verify email"
+       actionUrl
+       :extra-lines ["This link expires after 24 hours."])
 
       "email_verification"
-      {:subject "Aston Martin ASO – verify your email"
-       :textBody (str "Hello " name ",\n\n"
-                      "Please verify your email address by opening this link:\n"
-                      (or actionUrl "(missing link)")
-                      "\n\nThis link expires after 24 hours.\n\n"
-                      "Thank you for choosing Aston Martin ASO Service.")
-       :htmlBody (str "<html><body>"
-                      "<p>Hello " safe-name ",</p>"
-                      "<p>Please verify your email address:</p>"
-                      "<p><a href=\"" safe-url "\">Verify email</a></p>"
-                      "<p>Or paste this link into your browser:<br/>" safe-url "</p>"
-                      "<p>This link expires after 24 hours.</p>"
-                      "<p>Thank you for choosing Aston Martin ASO Service.</p>"
-                      "</body></html>")}
+      (action-email
+       name
+       "Aston Martin ASO – verify your email"
+       "Please verify your email address to activate your account."
+       "Verify email"
+       (or actionUrl "")
+       :extra-lines ["This link expires after 24 hours."])
 
       "password_reset"
-      {:subject "Aston Martin ASO – reset your password"
-       :textBody (str "Hello " name ",\n\n"
-                      "We received a request to reset your password. Open this link to choose a new one:\n"
-                      (or actionUrl "(missing link)")
-                      "\n\nIf you did not request this, you can ignore this email.\n"
-                      "This link expires after 1 hour.\n\n"
-                      "Thank you for choosing Aston Martin ASO Service.")
-       :htmlBody (str "<html><body>"
-                      "<p>Hello " safe-name ",</p>"
-                      "<p>We received a request to reset your password.</p>"
-                      "<p><a href=\"" safe-url "\">Reset password</a></p>"
-                      "<p>Or paste this link into your browser:<br/>" safe-url "</p>"
-                      "<p>If you did not request this, you can ignore this email.</p>"
-                      "<p>This link expires after 1 hour.</p>"
-                      "<p>Thank you for choosing Aston Martin ASO Service.</p>"
-                      "</body></html>")}
+      (action-email
+       name
+       "Aston Martin ASO – reset your password"
+       "We received a request to reset your password. Open the link below to choose a new one."
+       "Reset password"
+       (or actionUrl "")
+       :extra-lines ["If you did not request this, you can ignore this email."
+                     "This link expires after 1 hour."])
 
       "password_changed"
       {:subject "Aston Martin ASO – password changed"
-       :textBody (str "Hello " name ",\n\n"
-                      "Your Aston Martin ASO Service password was changed successfully.\n\n"
-                      "If you did not make this change, reset your password immediately and contact the workshop.\n\n"
-                      "Thank you for choosing Aston Martin ASO Service.")
-       :htmlBody (str "<html><body>"
-                      "<p>Hello " safe-name ",</p>"
-                      "<p>Your <strong>Aston Martin ASO Service</strong> password was changed successfully.</p>"
-                      "<p>If you did not make this change, reset your password immediately and contact the workshop.</p>"
-                      "<p>Thank you for choosing Aston Martin ASO Service.</p>"
-                      "</body></html>")}
+       :textBody (layout/wrap-text
+                  name
+                  (str "Your " layout/brand-name " password was changed successfully.\n\n"
+                       "If you did not make this change, reset your password immediately "
+                       "and contact the workshop."))
+       :htmlBody (layout/wrap-html
+                  name
+                  (str (layout/p (str "Your " layout/brand-name
+                                      " password was changed successfully."))
+                       (layout/p (str "If you did not make this change, reset your password "
+                                      "immediately and contact the workshop."))))}
+
+      "account_deletion"
+      (action-email
+       name
+       "Aston Martin ASO – confirm account deletion"
+       (str "We received a request to delete your " layout/brand-name " account. "
+            "Open the link below to confirm deletion.")
+       "Confirm account deletion"
+       (or actionUrl "")
+       :extra-lines ["If you did not request this, you can ignore this email — your account will stay active."
+                     "This link expires after 1 hour."])
+
+      "account_deleted"
+      {:subject "Aston Martin ASO – account deleted"
+       :textBody (layout/wrap-text
+                  name
+                  (str "Your " layout/brand-name " account has been deleted.\n\n"
+                       "Past workshop records may be retained by the service centre as required."))
+       :htmlBody (layout/wrap-html
+                  name
+                  (str (layout/p (str "Your " layout/brand-name " account has been deleted."))
+                       (layout/p "Past workshop records may be retained by the service centre as required.")))}
 
       "vehicle_added"
       {:subject "Aston Martin ASO – vehicle added"
-       :textBody (str "Hello " name ",\n\n"
-                      "A vehicle has been added to your account:\n"
-                      (str/join "\n" spec-lines)
-                      "\n\nThank you for choosing Aston Martin ASO Service.")
-       :htmlBody (str "<html><body>"
-                      "<p>Hello " safe-name ",</p>"
-                      "<p>A vehicle has been added to your account:</p>"
-                      "<p>"
-                      (str/join "<br/>" (map escape-html spec-lines))
-                      "</p>"
-                      "<p>Thank you for choosing Aston Martin ASO Service.</p>"
-                      "</body></html>")}
+       :textBody (layout/wrap-text
+                  name
+                  (str "A vehicle has been added to your account.\n\n" spec-text))
+       :htmlBody (layout/wrap-html
+                  name
+                  (str (layout/p "A vehicle has been added to your account.")
+                       (or spec-html "")))}
 
       "vehicle_removed"
       {:subject "Aston Martin ASO – vehicle removed"
-       :textBody (str "Hello " name ",\n\n"
-                      "A vehicle has been removed from your account:\n"
-                      (str/join "\n" spec-lines)
-                      "\n\nYour past service records are kept on file.\n\n"
-                      "Thank you for choosing Aston Martin ASO Service.")
-       :htmlBody (str "<html><body>"
-                      "<p>Hello " safe-name ",</p>"
-                      "<p>A vehicle has been removed from your account:</p>"
-                      "<p>"
-                      (str/join "<br/>" (map escape-html spec-lines))
-                      "</p>"
-                      "<p>Your past service records are kept on file.</p>"
-                      "<p>Thank you for choosing Aston Martin ASO Service.</p>"
-                      "</body></html>")}
+       :textBody (layout/wrap-text
+                  name
+                  (str "A vehicle has been removed from your account.\n\n"
+                       spec-text
+                       "\n\nYour past service records are kept on file."))
+       :htmlBody (layout/wrap-html
+                  name
+                  (str (layout/p "A vehicle has been removed from your account.")
+                       (or spec-html "")
+                       (layout/p "Your past service records are kept on file.")))}
 
       {:subject "Aston Martin ASO – notification"
-       :textBody (str "Hello " name ",\n\nYou have a new update from Aston Martin ASO Service.")
-       :htmlBody (str "<html><body><p>Hello " safe-name ",</p>"
-                      "<p>You have a new update from Aston Martin ASO Service.</p>"
-                      "</body></html>")})))
+       :textBody (layout/wrap-text
+                  name
+                  (str "You have a new update from " layout/brand-name "."))
+       :htmlBody (layout/wrap-html
+                  name
+                  (layout/p (str "You have a new update from " layout/brand-name ".")))})))

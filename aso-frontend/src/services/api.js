@@ -27,9 +27,17 @@ api.interceptors.response.use(
             const isAuthEndpoint =
                 url.includes("/auth/login") ||
                 url.includes("/auth/employee-login") ||
-                url.includes("/auth/register");
+                url.includes("/auth/register") ||
+                url.includes("/auth/request-account-deletion") ||
+                url.includes("/auth/confirm-account-deletion") ||
+                url.includes("/auth/verify-email") ||
+                url.includes("/auth/reset-password") ||
+                url.includes("/auth/forgot-password") ||
+                url.includes("/auth/resend-verification");
+            // Soft probes (e.g. live VIN check) must not wipe the session mid-flow.
+            const skipRedirect = error.config?.skipAuthRedirect === true;
 
-            if (!isAuthEndpoint) {
+            if (!isAuthEndpoint && !skipRedirect) {
                 clearSession();
                 const path = window.location.pathname;
                 const staffArea =

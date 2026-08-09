@@ -1,0 +1,12 @@
+.cpcache
+.nrepl-port
+.lsp
+.clj-kondo
+.git
+.gitignore
+*.md
+.env
+.env.*
+.DS_Store
+.idea
+test

@@ -1,8 +1,9 @@
 .dashboard {
   text-align: left;
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 1rem 1.25rem 2.5rem;
+  padding: 1.5rem 1.25rem 2.75rem;
+  min-height: 100svh;
 }
 
 .dashboard-header {
@@ -10,35 +11,61 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .dashboard-header h1 {
   margin: 0;
-  font-size: 1.75rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.dashboard-header .logo {
+  display: block;
+  width: clamp(9.5rem, 18vw, 13rem);
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 0.45rem;
 }
 
 .dashboard-user {
   color: var(--text);
   font-size: 0.95rem;
+  margin: 0;
 }
 
 .logout-btn {
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: transparent;
   color: var(--text-h);
-  border-radius: 8px;
-  padding: 0.45rem 0.85rem;
+  border-radius: 0;
+  padding: 0.5rem 0.95rem;
   font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.logout-btn:hover {
+  border-color: var(--text-h);
+  background: rgba(243, 244, 242, 0.04);
 }
 
 .danger-btn {
   margin-top: 0.75rem;
-  border: 1px solid #fecdca;
-  background: #fef3f2;
-  color: #b42318;
-  border-radius: 8px;
+  border: 1px solid var(--danger-border);
+  background: var(--danger-bg);
+  color: #f0b4aa;
+  border-radius: 0;
   padding: 0.55rem 0.9rem;
   font: inherit;
   cursor: pointer;
@@ -65,81 +92,120 @@
   width: 100%;
   box-sizing: border-box;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.7rem 0.85rem;
+  border-radius: 0;
+  padding: 0.75rem 0.9rem;
   font: inherit;
-  background: var(--bg);
+  background: var(--bg-elevated);
   color: var(--text-h);
+}
+
+.auth-form input:focus,
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  outline: 1px solid var(--accent-bright);
+  outline-offset: 0;
 }
 
 .auth-form button,
 .primary-btn {
-  border: 1px solid var(--accent-border);
-  background: var(--accent-bg);
-  color: var(--text-h);
-  border-radius: 8px;
-  padding: 0.7rem 1rem;
+  border: 1px solid var(--snow);
+  background: var(--snow);
+  color: var(--ink);
+  border-radius: 0;
+  padding: 0.75rem 1rem;
   font: inherit;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.auth-form button:hover,
+.primary-btn:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.auth-form button:disabled,
+.primary-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .auth-links {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.55rem;
   margin-top: 1rem;
 }
 
+.auth-links a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.auth-links a:hover {
+  color: var(--text-h);
+}
+
 .form-error {
-  color: #b42318;
+  color: #f0b4aa;
   margin: 0.5rem 0 0;
 }
 
 .form-success {
-  color: #027a48;
+  color: #8fbfa5;
   margin: 0.5rem 0 0;
 }
 
 .booking-card {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
+  border-radius: 0;
+  padding: 1rem 1.1rem;
   margin-bottom: 0.75rem;
-  background: var(--code-bg);
+  background: var(--bg-elevated);
 }
 
 .booking-card h4 {
   margin: 0 0 0.5rem;
   color: var(--text-h);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .worker-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-    align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  align-items: center;
 }
 
 .worker-actions select {
-    min-width: 12rem;
+  min-width: 12rem;
 }
 
 .reject-form {
-    margin-top: 0.75rem;
+  margin-top: 0.75rem;
 }
 
 .section-action-btn {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .admin-booking-card p {
-    margin: 0.35rem 0;
+  margin: 0.35rem 0;
 }
 
 .vehicle-remove-hint {
-    margin-top: 0.75rem;
+  margin-top: 0.75rem;
 }
 
 .booking-card p {
@@ -159,7 +225,7 @@
   flex: 1 1 140px;
   min-width: 120px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 0.55rem 0.7rem;
   font: inherit;
   background: var(--bg);
@@ -171,21 +237,31 @@
 }
 
 .section-block h2 {
-  margin-bottom: 0.75rem;
+  margin: 0 0 0.75rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
 }
 
 .customer-availability {
   margin: 0.75rem 0;
   padding: 0.75rem 0.9rem;
   border: 1px solid var(--accent-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--accent-bg);
 }
 
 .availability-title {
   margin: 0 0 0.35rem;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
   font-weight: 600;
-  color: var(--text-h);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
 }
 
 .customer-availability p {

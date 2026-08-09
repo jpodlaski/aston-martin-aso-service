@@ -1,5 +1,7 @@
 package com.sanproject.aso_service.catalog;
 
+import com.sanproject.aso_service.domain.Vehicle;
+
 // Specific engine/transmission combination; id is stored on the Vehicle as configurationId.
 public class ConfigurationOption {
 
