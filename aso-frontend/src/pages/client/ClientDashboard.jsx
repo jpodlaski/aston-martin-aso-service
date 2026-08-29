@@ -849,10 +849,6 @@ export default function ClientDashboard() {
                                 />
                             </label>
                         )}
-                        {!loading && bookings.some((b) => isArchiveStatus(b.status))
-                            && archiveBookings.length === 0 && (
-                            <p>No matching archived bookings.</p>
-                        )}
                         <div className="booking-list">
                             {archiveBookings.map((booking) => renderBookingCard(booking, { archive: true }))}
                         </div>
