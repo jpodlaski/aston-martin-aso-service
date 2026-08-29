@@ -1,10 +1,14 @@
 # Local full-stack demo: Postgres + Mailhog (fake SMTP UI) + Clojure email renderer + Spring API + Vite UI.
-# Start with: ./mvnw package -DskipTests && docker compose up --build
-# Fresh DB: docker compose down && rm -rf pgdata && ./mvnw package -DskipTests && docker compose up --build
+# First start: ./mvnw package -DskipTests && docker compose up -d --build
+# Daily restart: docker compose start   (or use Docker Desktop — containers stay listed)
+# Stop without removing: docker compose stop
+# Fresh DB: docker compose down && rm -rf pgdata && ./mvnw package -DskipTests && docker compose up -d --build
+name: aston-martin-aso
 services:
   db:
     image: postgres:16
     container_name: aso-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: aso_service_db
       POSTGRES_USER: postgres
@@ -26,6 +30,7 @@ services:
     image: mailhog/mailhog
     platform: linux/amd64
     container_name: aso-mailhog
+    restart: unless-stopped
     ports:
       - "1025:1025"
       - "8025:8025"
@@ -34,12 +39,14 @@ services:
     build:
       context: ./clojure/email-renderer
     container_name: aso-email-renderer
+    restart: unless-stopped
     ports:
       - "3000:3000"
 
   app:
     build: .
     container_name: aso-service-app
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -67,6 +74,7 @@ services:
     build:
       context: ./aso-frontend
     container_name: aso-frontend
+    restart: unless-stopped
     depends_on:
       - app
     ports:
