@@ -93,7 +93,10 @@ export default function AdminDashboard() {
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("MECHANIC");
 
+    const sessionToken = session?.token;
+
     const loadWorkers = useCallback(async () => {
+        if (!sessionToken) return;
         setLoading(true);
         setError("");
         try {
@@ -104,9 +107,10 @@ export default function AdminDashboard() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [sessionToken]);
 
     const loadBookings = useCallback(async () => {
+        if (!sessionToken) return;
         setBookingsLoading(true);
         setBookingsError("");
         try {
@@ -119,7 +123,7 @@ export default function AdminDashboard() {
         } finally {
             setBookingsLoading(false);
         }
-    }, []);
+    }, [sessionToken]);
 
     useEffect(() => {
         loadWorkers();

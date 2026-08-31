@@ -23,7 +23,11 @@ export default function EmployeeLogin() {
             saveSession(res.data);
             navigate(getDashboardPathForRole(res.data.role));
         } catch (err) {
-            setError(err.response?.data?.message ?? "Login failed.");
+            if (!err.response) {
+                setError("Could not reach the server. Check that the API is running on port 8080.");
+            } else {
+                setError(err.response?.data?.message ?? "Login failed.");
+            }
         } finally {
             setLoading(false);
         }

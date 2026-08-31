@@ -20,11 +20,27 @@ services:
         source: ./pgdata
         target: /var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d aso_service_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 2s
       timeout: 5s
       retries: 15
       start_period: 5s
+
+  # Ensures aso_service_db exists even when pgdata was initialized without POSTGRES_DB.
+  db-init:
+    image: postgres:16
+    container_name: aso-db-init
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: postgres
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        psql -h db -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'aso_service_db'" | grep -q 1 \
+          || psql -h db -U postgres -c "CREATE DATABASE aso_service_db"
+    restart: "no"
 
   mailhog:
     image: mailhog/mailhog
@@ -50,6 +66,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
       mailhog:
         condition: service_started
       email-renderer:

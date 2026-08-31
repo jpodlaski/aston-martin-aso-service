@@ -124,12 +124,15 @@ export default function EmployeeDashboard() {
             .sort((a, b) => Number(b.id) - Number(a.id));
     }, [consultant, consultantArchive, myBookings, archiveQuery]);
 
+    const sessionToken = session?.token;
+    const sessionRole = session?.role;
+
     const loadBookings = useCallback(async () => {
-        if (!session?.token) return;
+        if (!sessionToken) return;
         setLoading(true);
         setError("");
         try {
-            if (isConsultant(session.role)) {
+            if (isConsultant(sessionRole)) {
                 const [availableRes, awaitingRes, archiveRes] = await Promise.all([
                     api.get("/bookings/available"),
                     api.get("/workers/me/awaiting-workshop"),
@@ -154,7 +157,7 @@ export default function EmployeeDashboard() {
         } finally {
             setLoading(false);
         }
-    }, [session]);
+    }, [sessionToken, sessionRole]);
 
     useEffect(() => {
         loadBookings();
@@ -162,6 +165,7 @@ export default function EmployeeDashboard() {
 
     useEffect(() => {
         setAcceptForms((prev) => {
+            let changed = false;
             const next = { ...prev };
             for (const booking of available) {
                 if (
@@ -169,13 +173,14 @@ export default function EmployeeDashboard() {
                     && booking.estimatedDropOffTime
                     && !next[booking.id]?.scheduledDateTime
                 ) {
+                    changed = true;
                     next[booking.id] = {
                         ...next[booking.id],
                         scheduledDateTime: toDatetimeLocalValue(booking.estimatedDropOffTime),
                     };
                 }
             }
-            return next;
+            return changed ? next : prev;
         });
     }, [available]);
 
@@ -233,10 +238,12 @@ export default function EmployeeDashboard() {
 
     useEffect(() => {
         setWorkPlanForms((prev) => {
+            let changed = false;
             const next = { ...prev };
             for (const booking of assigned) {
                 if (booking.status !== "IN_PROGRESS") continue;
                 if (next[booking.id]?.touched) continue;
+                changed = true;
                 next[booking.id] = {
                     ...next[booking.id],
                     serviceTypes: (booking.serviceTypes ?? []).join(", "),
@@ -244,7 +251,7 @@ export default function EmployeeDashboard() {
                         booking.estimatedCost != null ? String(booking.estimatedCost) : "",
                 };
             }
-            return next;
+            return changed ? next : prev;
         });
     }, [assigned]);
 
