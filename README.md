@@ -1,3 +1,4 @@
+![Aston Martin ASO Service](docs/preview.png)
 # Aston Martin ASO Service
 
 Web application for an **Authorized Service Organization (ASO)**. Clients register, add Aston Martin vehicles, and request service. A **consultant** confirms the appointment; a **mechanic** (or apprentice) claims the job, updates the work plan, and completes service. Management creates workshop accounts. Branded notification emails are sent at each step; completion includes a PDF invoice.
