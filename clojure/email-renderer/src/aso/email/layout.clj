@@ -35,10 +35,20 @@
       (str/replace ">" "&gt;")
       (str/replace "\"" "&quot;")))
 
+(defn- blank-line? [x]
+  (or (nil? x) (str/blank? (str x))))
+(defn- keep-non-blank-lines [lines acc]
+  (if (empty? lines)
+    (reverse acc)
+    (let [line (first lines)]
+      (if (blank-line? line)
+        (recur (rest lines) acc)
+        (recur (rest lines) (conj acc line))))))
+(defn- join-fragments [fragments]
+  (reduce str "" fragments))
 (defn- text-lines [lines]
-  (->> lines
-       (remove #(or (nil? %) (str/blank? (str %))))
-       (str/join "\n")))
+  (-> (keep-non-blank-lines lines [])
+      (str/join "\n")))
 
 (defn wrap-text
   "Plain-text email body with greeting, content lines, and branded closing."
@@ -68,7 +78,7 @@
                    (escape-html (str value))
                    "</td>"
                    "</tr>")))
-       (str/join "")))
+       (join-fragments)))
 
 (defn details-table
   "Optional labeled detail block for HTML emails."
